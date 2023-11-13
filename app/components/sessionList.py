@@ -13,7 +13,7 @@ class SessionList:
         self.page = page
         self.name = name
 
-        self.namelist = os.listdir("./templates")
+        self.namelist = os.listdir("/mnt/my_vfat_partition/templates")
         try:
             self.namelist.remove("test_img")
         except:

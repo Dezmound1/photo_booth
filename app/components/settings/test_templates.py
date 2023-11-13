@@ -54,13 +54,13 @@ class TemplateTest:
     def get_file_paths(self):
         file_paths = []
 
-        for root, dirs, files in os.walk("./templates"):
+        for root, dirs, files in os.walk("/mnt/my_vfat_partition/templates"):
             for file in files:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
 
         file_paths = [
-            i for i in file_paths if not i.startswith("./templates/test_img")
+            i for i in file_paths if not i.startswith("/mnt/my_vfat_partition/templates/test_img")
         ]
         file_paths = [i for i in file_paths if not i.endswith(".json")]
 

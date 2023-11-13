@@ -24,7 +24,7 @@ class PhotoPage:
         self.master.rerun_process_camera()
 
         self.name_category = self.master.session[4]
-        self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
+        self.setting_template = json.load(open(f"/mnt/my_vfat_partition/templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
         self.size_y = self.setting_template["Photos"][0]["x"]
         self.size_x = self.setting_template["Photos"][0]["y"]
@@ -325,7 +325,7 @@ class PhotoPage:
             self.list_img = self.list_img * int(self.replace)
 
         # Путь к фоновому изображению из настроек шаблона
-        background_path = f"./templates/{self.name_category}/{self.name_template}.png"
+        background_path = f"/mnt/my_vfat_partition/templates/{self.name_category}/{self.name_template}.png"
         background = Image.open(background_path)
 
         for overlay_info, name_img in zip(self.setting_template["Photos"], self.list_img):

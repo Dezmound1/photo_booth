@@ -24,7 +24,7 @@ class UserChoise:
         self.index = 1
         self.list_template = [
             name.split(".")[0]
-            for name in os.listdir(f"./templates/{self.name_category}")
+            for name in os.listdir(f"/mnt/my_vfat_partition/templates/{self.name_category}")
             if name.split(".")[1] == "png"
         ]
         self.count_open = 1
@@ -161,14 +161,14 @@ class UserChoise:
             return output_path
 
         # Загружаем настройки шаблона
-        setting_template_path = f"./templates/{self.name_category}/{img_name}.json"
+        setting_template_path = f"/mnt/my_vfat_partition/templates/{self.name_category}/{img_name}.json"
         if not os.path.exists(setting_template_path):
             raise FileNotFoundError(f"Setting template file not found: {setting_template_path}")
 
         setting_template = json.load(open(setting_template_path))
 
         # Загружаем фоновое изображение
-        template_path = f"./templates/{self.name_category}/{img_name}.png"
+        template_path = f"/mnt/my_vfat_partition/templates/{self.name_category}/{img_name}.png"
         if not os.path.exists(template_path):
             raise FileNotFoundError(f"Template file not found: {template_path}")
 
