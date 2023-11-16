@@ -16,6 +16,13 @@ class MainButton(Container):
         )
 
 
+class MainText(ft.Text):
+    def __init__(self, value: str):
+        super().__init__()
+        self.value = value
+        self.size = 20
+
+
 class Alert(ft.AlertDialog):
     def __init__(self, event_next, event_close, *args, **kwargs):
         super().__init__(*args, **kwargs)
