@@ -1,41 +1,24 @@
+import os
 import flet as ft
 
+os.environ["FLET_WS_MAX_MESSAGE_SIZE"] = "8000000"
+
 def main(page: ft.Page):
-    page.title = "AlertDialog examples"
+    r = ft.Row(wrap=True, scroll="always", expand=True)
+    page.add(r)
 
-    dlg = ft.AlertDialog(
-        title=ft.Text("Hello, you!"), on_dismiss=lambda e: print("Dialog dismissed!")
-    )
+    for i in range(5000):
+        r.controls.append(
+            ft.Container(
+                ft.Text(f"Item {i}"),
+                width=100,
+                height=100,
+                alignment=ft.alignment.center,
+                bgcolor=ft.colors.AMBER_100,
+                border=ft.border.all(1, ft.colors.AMBER_400),
+                border_radius=ft.border_radius.all(5),
+            )
+        )
+    page.update()
 
-    def close_dlg(e):
-        dlg_modal.open = False
-        page.update()
-
-    dlg_modal = ft.AlertDialog(
-        modal=True,
-        title=ft.Text("Please confirm"),
-        content=ft.Text("Do you really want to delete all those files?"),
-        actions=[
-            ft.TextButton("Yes", on_click=close_dlg),
-            ft.TextButton("No", on_click=close_dlg),
-        ],
-        actions_alignment=ft.MainAxisAlignment.END,
-        on_dismiss=lambda e: print("Modal dialog dismissed!"),
-    )
-
-    def open_dlg(e):
-        page.dialog = dlg
-        dlg.open = True
-        page.update()
-
-    def open_dlg_modal(e):
-        page.dialog = dlg_modal
-        dlg_modal.open = True
-        page.update()
-
-    page.add(
-        ft.ElevatedButton("Open dialog", on_click=open_dlg),
-        ft.ElevatedButton("Open modal dialog", on_click=open_dlg_modal),
-    )
-
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)

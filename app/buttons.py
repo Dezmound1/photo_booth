@@ -21,6 +21,7 @@ class MainText(ft.Text):
         super().__init__()
         self.value = value
         self.size = 20
+        self.text_align = ft.TextAlign.CENTER
 
 
 class Alert(ft.AlertDialog):
@@ -28,9 +29,13 @@ class Alert(ft.AlertDialog):
         super().__init__(*args, **kwargs)
         self.modal = True
         self.title = ft.Text("Новая сессия")
-        self.content = ft.TextField(label="Введите название")
+        self.content = ft.TextField(label="Введите название", autofocus=True)
         self.actions = [
             ft.TextButton("Подтвердить", on_click=event_next),
             ft.TextButton("Назад", on_click=event_close),
         ]
         self.actions_alignment = ft.MainAxisAlignment.CENTER
+
+
+        
+

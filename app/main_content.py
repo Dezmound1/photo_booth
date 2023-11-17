@@ -51,12 +51,88 @@ class HistoryPage:
         self.master.new_win(Main)
 
 
+class SessionList:
+    def __init__(self, page, master):
+        self.master = master
+        self.page = page
+        self.button_back = MainButton("Назад", self.back_main)
+        self.namelist = [
+            "Свадьба",
+            "Хелоуин",
+            "День рождения",
+            "Яблочный спас",
+            "Масленница",
+            "Похороны",
+            "Я ебу",
+            "Мальчишник",
+            "Оченьдлинноеслово",
+            "Свадьба",
+            "Хелоуин",
+            "День рождения",
+            "Яблочный спас",
+            "Масленница",
+            "Похороны",
+            "Я ебу",
+            "Мальчишник",
+            "Свадьба",
+            "Хелоуин",
+            "День рождения",
+            "Яблочный спас",
+            "Масленница",
+            "Похороны",
+            "Я ебу",
+            "Мальчишник",
+            "Свадьба",
+            "Хелоуин",
+            "День рождения",
+            "Яблочный спас",
+            "Масленница",
+            "Похороны",
+            "Я ебу",
+            "Мальчишник",
+        ]
+
+        self.page.add(
+            ft.Row(
+                [self.button_back],
+                alignment=ft.MainAxisAlignment.START,
+                visible=True,
+            )
+        )
+        
+        row = ft.Row(wrap=False, scroll="AUTO", expand=True, alignment=ft.MainAxisAlignment.CENTER)
+        self.page.add(row)
+        for i in self.namelist:
+                row.controls.append(
+                        ft.Container(
+                            content=MainText(f'{i}'),
+                            margin=10,
+                            padding=10,
+                            alignment=ft.alignment.center,
+                            bgcolor=ft.colors.GREY_600,
+                            width=150,
+                            height=150,
+                            border_radius=10,
+                            ink=True,
+                            on_click=lambda e: print('boom'),
+                        )
+                )
+        self.page.update()
+            
+
+    def void(self, e):
+        print("do nothing now!")
+
+    def back_main(self, e):
+        self.master.new_win(Main)
+
+
 class Main:
     def __init__(self, page: ft.Page, master):
         self.master = master
         self.page = page
         self.new_session = Alert(
-            event_close=self.close_dlg, event_next=self.close_dlg
+            event_next=self.list_session, event_close=self.close_dlg
         )
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
@@ -95,6 +171,15 @@ class Main:
 
     def history(self, e):
         self.master.new_win(HistoryPage)
+
+    def list_session(self, e):
+        if not self.new_session.content.value:
+            print(self.new_session.content.value)
+            self.new_session.content.error_text = "Нет названия"
+            self.page.update()
+        else:
+            self.close_dlg(e)
+            self.master.new_win(SessionList)
 
     def close_dlg(self, e):
         self.new_session.open = False
