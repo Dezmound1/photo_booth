@@ -10,15 +10,21 @@ class Pages:
 
         self.new_win(Main)
 
-    def new_win(self, class_name_page):
+    def new_win(self, class_name_page, params=None):
         if self.views:
-            self.page.clean()
-            self.views = class_name_page(self.page, self)
+            if not params:
+                self.page.clean()
+                self.views = class_name_page(self.page, self)
+            else:
+                self.page.clean()
+                self.views = class_name_page(self.page, self, params)
         else:
-            self.page.clean()
-            self.views = class_name_page(self.page, self)
-            # init class class_name_page
-
+            if not params:
+                self.page.clean()
+                self.views = class_name_page(self.page, self)
+            else:
+                self.page.clean()
+                self.views = class_name_page(self.page, self, params)
 
 
 def main(page: ft.Page):

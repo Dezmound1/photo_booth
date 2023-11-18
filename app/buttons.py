@@ -35,7 +35,3 @@ class Alert(ft.AlertDialog):
             ft.TextButton("Назад", on_click=event_close),
         ]
         self.actions_alignment = ft.MainAxisAlignment.CENTER
-
-
-        
-

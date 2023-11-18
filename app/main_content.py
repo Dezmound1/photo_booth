@@ -16,9 +16,10 @@ class HistoryPage:
         self.button_back = MainButton("Назад", self.back_main)
 
         self.page.add(
-            ft.Row([self.button_back], alignment=ft.MainAxisAlignment.START)
+            ft.Container(
+                content=self.button_back, alignment=ft.alignment.top_left
+            )
         )
-
         self.page.add(
             ft.Row(
                 [self.title],
@@ -44,11 +45,11 @@ class HistoryPage:
                 )
             )
 
-    def voids(self, e):
-        print("do nothing now!")
-
     def back_main(self, e):
         self.master.new_win(Main)
+
+    def voids(self, e):
+        print("aaa")
 
 
 class SessionList:
@@ -91,7 +92,7 @@ class SessionList:
             "Я ебу",
             "Мальчишник",
         ]
-
+        # self.title = ft.Text(self.title, size=30)
         self.page.add(
             ft.Row(
                 [self.button_back],
@@ -99,32 +100,98 @@ class SessionList:
                 visible=True,
             )
         )
-        
-        row = ft.Row(wrap=False, scroll="AUTO", expand=True, alignment=ft.MainAxisAlignment.CENTER)
-        self.page.add(row)
-        for i in self.namelist:
-                row.controls.append(
-                        ft.Container(
-                            content=MainText(f'{i}'),
-                            margin=10,
-                            padding=10,
-                            alignment=ft.alignment.center,
-                            bgcolor=ft.colors.GREY_600,
-                            width=150,
-                            height=150,
-                            border_radius=10,
-                            ink=True,
-                            on_click=lambda e: print('boom'),
-                        )
-                )
-        self.page.update()
-            
 
-    def void(self, e):
-        print("do nothing now!")
+        self.row = ft.Row(
+            wrap=False,
+            scroll="AUTO",
+            expand=True,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        self.page.add(self.row)
+        for i in self.namelist:
+            self.row.controls.append(self.creat_buttom(i))
+            # получить название темы
+            # print(ft.Container(i)._Container__content)
+        self.page.update()
+
+    def creat_buttom(self, name):
+        return ft.Container(
+            content=MainText(f"{name}"),
+            margin=10,
+            padding=10,
+            alignment=ft.alignment.center,
+            bgcolor=ft.colors.GREY_700,
+            width=150,
+            height=150,
+            border_radius=10,
+            ink=True,
+            on_click=lambda e: self.userlist(e, name),
+        )
+
+    def userlist(self, e, name):
+        self.master.new_win(UserChoise, name)
 
     def back_main(self, e):
         self.master.new_win(Main)
+
+
+class UserChoise:
+    def __init__(self, page, master, name):
+        self.master = master
+        self.page = page
+        self.name_categore = name
+        print(self.name_categore)
+        self.cards = ft.Row(
+            wrap=False,
+            scroll="AUTO",
+            expand=True,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        self.page.add(
+            ft.Row(
+                [
+                    ft.Text(
+                        self.name_categore,
+                        style=ft.TextThemeStyle.DISPLAY_MEDIUM,
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            )
+        )
+        self.page.add(self.cards)
+
+        for i in range(5):
+            self.cards.controls.append(
+                ft.Container(
+                    content=MainText(f"CARD {i}"),
+                    margin=10,
+                    padding=10,
+                    alignment=ft.alignment.center,
+                    bgcolor=ft.colors.DEEP_PURPLE_100,
+                    width=280,
+                    height=280,
+                    border_radius=15,
+                    ink=True,
+                    on_click=self.photo_maker,
+                )
+            )
+            self.page.update()
+
+    def photo_maker(self, e):
+        self.master.new_win(PhotoPage)
+
+
+class PhotoPage:
+    def __init__(self, page, master):
+        self.page = page
+        self.master = master
+        self.button = MainButton("Создать", self.void)
+        self.page.add(
+            ft.Row([self.button], alignment=ft.MainAxisAlignment.CENTER)
+        )
+
+    def void(self, e):
+        print("to do!!")
 
 
 class Main:
@@ -178,8 +245,11 @@ class Main:
             self.new_session.content.error_text = "Нет названия"
             self.page.update()
         else:
+            r = self.new_session.content.value
+            print(type(r), r)
             self.close_dlg(e)
             self.master.new_win(SessionList)
+            # передавать название
 
     def close_dlg(self, e):
         self.new_session.open = False
@@ -189,3 +259,6 @@ class Main:
         self.page.dialog = self.new_session
         self.new_session.open = True
         self.page.update()
+
+    def suck_my_dick(self, e):
+        
