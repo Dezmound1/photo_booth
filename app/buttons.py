@@ -7,12 +7,12 @@ class MainButton(Container):
         super().__init__()
         self.content = ft.ElevatedButton(
             content=ft.Column(
-                [ft.Text(value=text, size=20)],
+                [ft.Text(value=text, size=26)],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
-            height=50,
-            width=200,
-            on_click=on_click,
+            height=70,
+            width=250,
+            on_click=on_click
         )
 
 
@@ -20,7 +20,7 @@ class MainText(ft.Text):
     def __init__(self, value: str):
         super().__init__()
         self.value = value
-        self.size = 20
+        self.size = 30
         self.text_align = ft.TextAlign.CENTER
 
 

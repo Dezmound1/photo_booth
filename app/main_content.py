@@ -101,17 +101,13 @@ class SessionList:
             )
         )
 
-        self.row = ft.Row(
-            wrap=False,
-            scroll="AUTO",
+        self.row = ft.GridView(
             expand=True,
-            alignment=ft.MainAxisAlignment.CENTER,
+            runs_count=4
         )
         self.page.add(self.row)
         for i in self.namelist:
             self.row.controls.append(self.creat_buttom(i))
-            # получить название темы
-            # print(ft.Container(i)._Container__content)
         self.page.update()
 
     def creat_buttom(self, name):
@@ -121,8 +117,8 @@ class SessionList:
             padding=10,
             alignment=ft.alignment.center,
             bgcolor=ft.colors.GREY_700,
-            width=150,
-            height=150,
+            width=200,
+            height=200,
             border_radius=10,
             ink=True,
             on_click=lambda e: self.userlist(e, name),
@@ -139,8 +135,7 @@ class UserChoise:
     def __init__(self, page, master, name):
         self.master = master
         self.page = page
-        self.name_categore = name
-        print(self.name_categore)
+        self.name_category = name
         self.cards = ft.Row(
             wrap=False,
             scroll="AUTO",
@@ -151,7 +146,7 @@ class UserChoise:
             ft.Row(
                 [
                     ft.Text(
-                        self.name_categore,
+                        self.name_category,
                         style=ft.TextThemeStyle.DISPLAY_MEDIUM,
                     )
                 ],
@@ -167,9 +162,9 @@ class UserChoise:
                     margin=10,
                     padding=10,
                     alignment=ft.alignment.center,
-                    bgcolor=ft.colors.DEEP_PURPLE_100,
-                    width=280,
-                    height=280,
+                    bgcolor=ft.colors.GREY_600,
+                    width=420,
+                    height=1080,
                     border_radius=15,
                     ink=True,
                     on_click=self.photo_maker,
@@ -178,26 +173,154 @@ class UserChoise:
             self.page.update()
 
     def photo_maker(self, e):
-        self.master.new_win(PhotoPage)
+        self.master.new_win(PhotoPage, self.name_category)
 
 
 class PhotoPage:
-    def __init__(self, page, master):
+    def __init__(self, page, master, name):
         self.page = page
         self.master = master
+        self.count = 1
+        self.name_category = name
+
         self.button = MainButton("Создать", self.void)
+        self.colum = ft.Column(
+            controls=[
+                ft.Text(
+                    value="YOUR PHOTO",
+                    size=40,
+                    font_family="RobotoSlab",
+                    weight=ft.FontWeight.W_600,
+                ),
+            ],
+            horizontal_alignment=ft.MainAxisAlignment.CENTER,
+        )
         self.page.add(
-            ft.Row([self.button], alignment=ft.MainAxisAlignment.CENTER)
+            ft.Row(
+                [
+                    self.colum,
+                    self.button,
+                    ft.Column(
+                        controls=[
+                            MainButton("Назад", lambda e: self.back(e, name))
+                        ]
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            )
         )
 
     def void(self, e):
-        print("to do!!")
+        if self.count < 5:
+            self.count += 1
+            self.colum.controls.append(
+                ft.Container(
+                    ft.Stack(
+                        [
+                            ft.Container(
+                                margin=10,
+                                right=0,
+                                border_radius=5,
+                                width=70,
+                                height=70,
+                                content=ft.IconButton(
+                                    icon=ft.icons.DELETE_FOREVER_ROUNDED,
+                                    icon_color="pink600",
+                                    icon_size=40,
+                                    tooltip="Удалить фотографию",
+                                ),
+                            )
+                        ]
+                    ),
+                    border_radius=8,
+                    padding=5,
+                    width=400,
+                    height=250,
+                    bgcolor=ft.colors.BLACK,
+                )
+            )
+            self.page.update()
+        else:
+            self.button.visible = False
+            self.page.controls[0].controls[1] = MainButton(
+                "Сформировать", on_click=self.to_print
+            )
+            self.page.update()
+            # self.page.add()
+
+    def back(self, e, name):
+        self.master.new_win(UserChoise, name)
+
+    def to_print(self, e):
+        self.master.new_win(PrintPage)
+
+
+class PrintPage:
+    def __init__(self, page, master):
+        self.page = page
+        self.master = master
+        page.title = "Print your photo"
+        page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.txt_number = ft.TextField(
+            value="0", text_align="right", width=400, text_size=30
+        )
+
+        self.page.add(
+            ft.Column(
+                [
+                    ft.Row(
+                        [
+                            ft.Container(
+                                border_radius=8,
+                                padding=5,
+                                width=420,
+                                height=1080,
+                                bgcolor=ft.colors.BLACK,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Row(
+                        [
+                            ft.IconButton(
+                                ft.icons.REMOVE,
+                                on_click=self.minus_click,
+                                icon_size=50,
+                            ),
+                            self.txt_number,
+                            ft.IconButton(
+                                ft.icons.ADD,
+                                on_click=self.plus_click,
+                                icon_size=50,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                ]
+            )
+        )
+
+    def minus_click(self, e):
+        if self.txt_number.value == "0":
+            self.txt_number.value = "0"
+        else:
+            self.txt_number.value = str(int(self.txt_number.value) - 1)
+            self.page.update()
+
+    def plus_click(self, e):
+        if self.txt_number.value == "8":
+            self.txt_number.value = "8"
+        else:
+            self.txt_number.value = str(int(self.txt_number.value) + 1)
+            self.page.update()
 
 
 class Main:
     def __init__(self, page: ft.Page, master):
         self.master = master
         self.page = page
+
         self.new_session = Alert(
             event_next=self.list_session, event_close=self.close_dlg
         )
@@ -228,7 +351,8 @@ class Main:
                         alignment=ft.MainAxisAlignment.CENTER,
                         visible=True,
                     ),
-                ]
+                ],
+                spacing=20,
             )
         )
 
@@ -259,6 +383,3 @@ class Main:
         self.page.dialog = self.new_session
         self.new_session.open = True
         self.page.update()
-
-    def suck_my_dick(self, e):
-        
