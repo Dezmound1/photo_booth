@@ -2,6 +2,7 @@ import flet as ft
 from components.buttons import MainButton, Alert
 from time import sleep
 from components.sessionList import SessionList
+from components.history import HistoryPage
 
 class Main:
     def __init__(self, page: ft.Page, master):
