@@ -1,5 +1,6 @@
 import flet as ft
 from buttons import MainButton, Alert, MainText
+from time import sleep
 
 
 class HistoryPage:
@@ -63,8 +64,6 @@ class SessionList:
             "День рождения",
             "Яблочный спас",
             "Масленница",
-            "Похороны",
-            "Я ебу",
             "Мальчишник",
             "Оченьдлинноеслово",
             "Свадьба",
@@ -72,24 +71,18 @@ class SessionList:
             "День рождения",
             "Яблочный спас",
             "Масленница",
-            "Похороны",
-            "Я ебу",
             "Мальчишник",
             "Свадьба",
             "Хелоуин",
             "День рождения",
             "Яблочный спас",
             "Масленница",
-            "Похороны",
-            "Я ебу",
             "Мальчишник",
             "Свадьба",
             "Хелоуин",
             "День рождения",
             "Яблочный спас",
             "Масленница",
-            "Похороны",
-            "Я ебу",
             "Мальчишник",
         ]
         # self.title = ft.Text(self.title, size=30)
@@ -275,7 +268,7 @@ class PrintPage:
                                 border_radius=8,
                                 padding=5,
                                 width=420,
-                                height=1080,
+                                height=700,
                                 bgcolor=ft.colors.BLACK,
                             ),
                         ],
@@ -372,6 +365,7 @@ class Main:
             r = self.new_session.content.value
             print(type(r), r)
             self.close_dlg(e)
+            sleep(.3)
             self.master.new_win(SessionList)
 
     def close_dlg(self, e):
