@@ -1,5 +1,6 @@
 import flet as ft
-from main_content import Main
+from components.main import Main
+from components.user_choise import UserChoise
 
 
 class Pages:
@@ -25,6 +26,14 @@ class Pages:
             else:
                 self.page.clean()
                 self.views = class_name_page(self.page, self, params)
+
+    def back_main_page(self):
+        self.page.clean()
+        self.views = Main(self.page, self)
+
+    def back_user_choise(self, params):
+        self.page.clean()
+        self.views = UserChoise(self.page, self, params)
 
 
 def main(page: ft.Page):
