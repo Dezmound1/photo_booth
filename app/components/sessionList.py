@@ -64,7 +64,7 @@ class SessionList:
         )
 
     def userlist(self, e, name):
-        self.master.back_user_choise(name)
+        self.master.user_choise(name)
 
-    def back_main(self, e):
-        self.master.back_main_page()
+    def back_main(self, e, name):
+        self.master.back_main_page(name)

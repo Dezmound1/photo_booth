@@ -2,7 +2,6 @@ import flet as ft
 from components.main import Main
 from components.user_choise import UserChoise
 
-
 class Pages:
     def __init__(self, page):
         self.page = page
@@ -31,9 +30,13 @@ class Pages:
         self.page.clean()
         self.views = Main(self.page, self)
 
-    def back_user_choise(self, params):
+    def user_choise(self, name):
         self.page.clean()
-        self.views = UserChoise(self.page, self, params)
+        self.views = UserChoise(self.page, self, name)
+    
+    def back_user_list(self, name):
+        self.page.clean()
+        self.views = UserChoise(self.page, self, name)
 
 
 def main(page: ft.Page):

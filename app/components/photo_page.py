@@ -27,7 +27,7 @@ class PhotoPage:
                 [
                     self.colum,
                     self.button,
-                    ft.Column(controls=[MainButton("Назад", lambda e: self.back(e, name))]),
+                    ft.Column(controls=[MainButton("Назад", lambda e: self.back(e, self.name_category))]),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
             )
@@ -70,7 +70,7 @@ class PhotoPage:
             # self.page.add()
 
     def back(self, e, name):
-        self.master.back_user_choise(name)
+        self.master.user_choise(name)
 
     def to_print(self, e):
-        self.master.new_win(PrintPage)
+        self.master.new_win(PrintPage, self.name_category)

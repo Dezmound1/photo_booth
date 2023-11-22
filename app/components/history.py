@@ -2,6 +2,7 @@ import flet as ft
 from components.buttons import MainButton, MainText
 
 
+
 class HistoryPage:
     def __init__(self, page, master):
         self.master = master
