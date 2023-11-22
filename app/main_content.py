@@ -327,7 +327,7 @@ class Main:
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
         settings = MainButton("Настройки", self.void)
-        shut_down = MainButton("Выключить", self.void)
+        shut_down = MainButton("Выключить", self.shut_down)
         self.page.add(
             ft.Column(
                 [
@@ -373,7 +373,6 @@ class Main:
             print(type(r), r)
             self.close_dlg(e)
             self.master.new_win(SessionList)
-            # передавать название
 
     def close_dlg(self, e):
         self.new_session.open = False
@@ -383,3 +382,6 @@ class Main:
         self.page.dialog = self.new_session
         self.new_session.open = True
         self.page.update()
+    
+    def shut_down(self, e):
+        self.page.window_destroy()

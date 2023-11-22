@@ -28,10 +28,10 @@ class Alert(ft.AlertDialog):
     def __init__(self, event_next, event_close, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.modal = True
-        self.title = ft.Text("Новая сессия")
-        self.content = ft.TextField(label="Введите название", autofocus=True)
+        self.title = MainText("Новая сессия")
+        self.content = ft.TextField(label="Введите название", autofocus=True, width=700)
         self.actions = [
-            ft.TextButton("Подтвердить", on_click=event_next),
-            ft.TextButton("Назад", on_click=event_close),
+            MainButton("Подтвердить", on_click=event_next),
+            MainButton("Назад", on_click=event_close),
         ]
         self.actions_alignment = ft.MainAxisAlignment.CENTER

@@ -28,6 +28,7 @@ class Pages:
 
 
 def main(page: ft.Page):
+    page.window_full_screen = True
     Pages(page=page)
 
 
