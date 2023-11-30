@@ -1,5 +1,5 @@
 import flet as ft
-from components.buttons import MainButton, MainText
+from components.buttons import MainButton, MainText, RedButton
 
 
 
@@ -14,7 +14,7 @@ class HistoryPage:
         self.session_photo = MainText("Фото сессии")
         self.session_comment = MainText("Краткое описание")
 
-        self.button_back = MainButton("Назад", self.back_main)
+        self.button_back = RedButton("Назад", self.back_main)
 
         self.page.add(ft.Container(content=self.button_back, alignment=ft.alignment.top_left))
         self.page.add(

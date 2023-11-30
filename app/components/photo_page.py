@@ -1,5 +1,5 @@
 import flet as ft
-from components.buttons import MainButton
+from components.buttons import MainButton, RedButton
 from components.print_page import PrintPage
 
 
@@ -27,7 +27,7 @@ class PhotoPage:
                 [
                     self.colum,
                     self.button,
-                    ft.Column(controls=[MainButton("Назад", lambda e: self.back(e, self.name_category))]),
+                    ft.Column(controls=[RedButton("Назад", lambda e: self.back(e, self.name_category))]),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
             )

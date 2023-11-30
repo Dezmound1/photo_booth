@@ -1,12 +1,12 @@
 import flet as ft
-from components.buttons import MainButton, MainText
+from components.buttons import MainButton, MainText, RedButton
 
 
 class SessionList:
     def __init__(self, page, master):
         self.master = master
         self.page = page
-        self.button_back = MainButton("Назад", self.back_main)
+        self.button_back = RedButton("Назад", self.back_main)
         self.namelist = [
             "Свадьба",
             "Хелоуин",
@@ -66,5 +66,5 @@ class SessionList:
     def userlist(self, e, name):
         self.master.user_choise(name)
 
-    def back_main(self, e, name):
-        self.master.back_main_page(name)
+    def back_main(self, e):
+        self.master.back_main_page()

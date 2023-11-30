@@ -1,8 +1,9 @@
 import flet as ft
-from components.buttons import MainButton, Alert
+from components.buttons import MainButton, Alert, RedButton
 from time import sleep
 from components.sessionList import SessionList
 from components.history import HistoryPage
+from components.settings_page import Settings
 
 class Main:
     def __init__(self, page: ft.Page, master):
@@ -12,8 +13,8 @@ class Main:
         self.new_session = Alert(event_next=self.list_session, event_close=self.close_dlg)
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
-        settings = MainButton("Настройки", self.void)
-        shut_down = MainButton("Выключить", self.shut_down)
+        settings = MainButton("Настройки", self.settings)
+        shut_down = RedButton("Выключить", self.shut_down)
         self.page.add(
             ft.Column(
                 [
@@ -72,3 +73,6 @@ class Main:
 
     def shut_down(self, e):
         self.page.window_destroy()
+    
+    def settings(self, e):
+        self.master.new_win(Settings)

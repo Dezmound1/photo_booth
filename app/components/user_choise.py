@@ -27,7 +27,7 @@ class UserChoise:
         )
         self.page.add(self.cards)
 
-        for i in range(5):
+        for i in range(8):
             self.cards.controls.append(
                 ft.Container(
                     content=MainText(f"CARD {i}"),

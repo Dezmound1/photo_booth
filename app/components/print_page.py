@@ -1,5 +1,6 @@
 import flet as ft
-from components.buttons import MainButton
+from components.buttons import MainButton, RedButton
+from time import sleep
 
 
 class PrintPage:
@@ -61,7 +62,7 @@ class PrintPage:
                 [
                     self.void_column,
                     self.row_preset,
-                    ft.Column(controls=[MainButton("Назад", self.back)]),
+                    ft.Column(controls=[RedButton("Назад", self.back)]),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             ),
@@ -99,3 +100,4 @@ class PrintPage:
 
     def do_nothing(self, e):
         print(f"Вы распечатаете {self.txt_number.value} копий")
+        self.master.back_user_list(self.name_category)
