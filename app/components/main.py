@@ -56,10 +56,9 @@ class Main:
             self.page.update()
         else:
             r = self.new_session.content.value
-            print(type(r), r)
             self.close_dlg(e)
             sleep(0.3)
-            self.master.new_win(SessionList)
+            self.master.new_win(SessionList, r)
 
     def close_dlg(self, e):
         self.new_session.open = False

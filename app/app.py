@@ -1,4 +1,6 @@
 import flet as ft
+import sqlite3
+
 from components.main import Main
 from components.user_choise import UserChoise
 
@@ -7,6 +9,10 @@ class Pages:
         self.page = page
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.views = None
+        self.conn = sqlite3.connect("./base.db", check_same_thread=False)
+        self.cur = self.conn.cursor()
+        
+        self.session = None
 
         self.new_win(Main)
 
@@ -30,13 +36,9 @@ class Pages:
         self.page.clean()
         self.views = Main(self.page, self)
 
-    def user_choise(self, name):
+    def user_choise(self):
         self.page.clean()
-        self.views = UserChoise(self.page, self, name)
-    
-    def back_user_list(self, name):
-        self.page.clean()
-        self.views = UserChoise(self.page, self, name)
+        self.views = UserChoise(self.page, self)
 
 
 def main(page: ft.Page):

@@ -2,12 +2,19 @@ import flet as ft
 from components.buttons import MainText
 from components.photo_page import PhotoPage
 
+import os
+
 
 class UserChoise:
-    def __init__(self, page, master, name):
+    def __init__(self, page, master):
         self.master = master
         self.page = page
-        self.name_category = name
+        self.name_category = self.master.session[4]
+        self.list_template = [
+            name.split(".")[0]
+            for name in os.listdir(f"./templates/{self.name_category}")
+            if name.split(".")[1] == "png"
+        ]
         self.cards = ft.Row(
             wrap=False,
             scroll="AUTO",
@@ -27,22 +34,26 @@ class UserChoise:
         )
         self.page.add(self.cards)
 
-        for i in range(5):
-            self.cards.controls.append(
-                ft.Container(
-                    content=MainText(f"CARD {i}"),
-                    margin=10,
-                    padding=10,
-                    alignment=ft.alignment.center,
-                    bgcolor=ft.colors.GREY_600,
-                    width=420,
-                    height=1080,
-                    border_radius=15,
-                    ink=True,
-                    on_click=self.photo_maker,
-                )
-            )
+        for i in self.list_template:
+            self.creact_container(i)
             self.page.update()
+        
+        self.page.update()
 
-    def photo_maker(self, e):
-        self.master.new_win(PhotoPage, self.name_category)
+    def creact_container(self, name):
+        self.cards.controls.append(
+            ft.Container(
+                margin=10,
+                padding=10,
+                alignment=ft.alignment.center,
+                width=620,
+                height=922,
+                border_radius=15,
+                ink=True,
+                on_click=lambda e: self.photo_maker(e, name),
+                image_src=f"./templates/{self.name_category}/{name}.png",
+            )
+        )
+
+    def photo_maker(self, e, name):
+        self.master.new_win(PhotoPage, name)

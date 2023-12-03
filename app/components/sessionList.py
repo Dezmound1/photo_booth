@@ -1,40 +1,20 @@
 import flet as ft
+
+import os
+from datetime import datetime
+
 from components.buttons import MainButton, MainText
 
 
 class SessionList:
-    def __init__(self, page, master):
+    def __init__(self, page, master, name):
         self.master = master
         self.page = page
+        self.name = name
+        
+        self.namelist = os.listdir("./templates")
+        
         self.button_back = MainButton("Назад", self.back_main)
-        self.namelist = [
-            "Свадьба",
-            "Хелоуин",
-            "День рождения",
-            "Яблочный спас",
-            "Масленница",
-            "Мальчишник",
-            "Оченьдлинноеслово",
-            "Свадьба",
-            "Хелоуин",
-            "День рождения",
-            "Яблочный спас",
-            "Масленница",
-            "Мальчишник",
-            "Свадьба",
-            "Хелоуин",
-            "День рождения",
-            "Яблочный спас",
-            "Масленница",
-            "Мальчишник",
-            "Свадьба",
-            "Хелоуин",
-            "День рождения",
-            "Яблочный спас",
-            "Масленница",
-            "Мальчишник",
-        ]
-        # self.title = ft.Text(self.title, size=30)
         self.page.add(
             ft.Row(
                 [self.button_back],
@@ -64,7 +44,19 @@ class SessionList:
         )
 
     def userlist(self, e, name):
-        self.master.user_choise(name)
+        date  = str(datetime.now().date())
+        name_dir = "./photo_session/" + self.name + "_" + date
+        os.makedirs(name_dir)
+        os.makedirs(name_dir+"/photo")
+        os.makedirs(name_dir+"/photo_templates")
+        
+        self.master.cur.execute('INSERT INTO session (name, date, dir, topic) VALUES (?, ?, ?, ?)', (self.name, date, name_dir, name))
+        last_row_id = self.master.cur.lastrowid
+        self.master.conn.commit()
+        self.master.cur.execute('SELECT * FROM session WHERE id = ?', (last_row_id,))
+        
+        self.master.session = self.master.cur.fetchone()
+        self.master.user_choise()
 
     def back_main(self, e, name):
         self.master.back_main_page(name)

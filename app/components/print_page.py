@@ -3,13 +3,16 @@ from components.buttons import MainButton
 
 
 class PrintPage:
-    def __init__(self, page, master, name):
+    def __init__(self, page, master, path_img):
         self.page = page
         self.master = master
-        self.name_category = name
+        self.path_img = path_img
+        self.name_category = self.master.session[4]
+        
         page.title = "Print your photo"
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        
         self.txt_number = ft.TextField(
             value="0", text_align="right", width=400, text_size=30
         )
@@ -32,7 +35,7 @@ class PrintPage:
                     padding=5,
                     width=420,
                     height=700,
-                    bgcolor=ft.colors.BLACK,
+                    image_src=self.path_img,
                 ),
             ]
         )
@@ -81,7 +84,7 @@ class PrintPage:
 
 
     def back(self, e):
-        self.master.back_user_list(self.name_category)
+        self.master.user_choise()
 
     def minus_click(self, e):
         if self.txt_number.value == "0":
