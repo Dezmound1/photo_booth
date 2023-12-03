@@ -1,5 +1,6 @@
 import flet as ft
 from components.buttons import MainButton, MainText
+from components.photo_history import PhotoHistory
 
 
 class HistoryPage:
@@ -60,6 +61,7 @@ class HistoryPage:
     def photo_session(self,e,session_id):
         self.master.cur.execute('SELECT * FROM session WHERE id = ?', (session_id,))
         self.master.session = self.master.cur.fetchone()
+        self.master.new_win(PhotoHistory)
     
     def resume_session(self,e,session_id):
         self.master.cur.execute('SELECT * FROM session WHERE id = ?', (session_id,))

@@ -3,6 +3,8 @@ import sqlite3
 
 from components.main import Main
 from components.user_choise import UserChoise
+from components.history import HistoryPage
+from components.photo_history import PhotoHistory
 
 class Pages:
     def __init__(self, page):
@@ -39,6 +41,14 @@ class Pages:
     def user_choise(self):
         self.page.clean()
         self.views = UserChoise(self.page, self)
+
+    def back_settings(self):
+        self.page.clean()
+        self.views = HistoryPage(self.page, self)
+    
+    def back_photo_history(self):
+        self.page.clean()
+        self.views = PhotoHistory(self.page, self)
 
 
 def main(page: ft.Page):

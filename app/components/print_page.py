@@ -6,7 +6,8 @@ class PrintPage:
     def __init__(self, page, master, path_img):
         self.page = page
         self.master = master
-        self.path_img = path_img
+        self.path_img = path_img[0]
+        self.is_history = path_img[1]
         self.name_category = self.master.session[4]
         
         page.title = "Print your photo"
@@ -84,7 +85,10 @@ class PrintPage:
 
 
     def back(self, e):
-        self.master.user_choise()
+        if self.is_history:
+            self.master.back_photo_history()
+        else:
+            self.master.user_choise()
 
     def minus_click(self, e):
         if self.txt_number.value == "0":

@@ -244,7 +244,7 @@ class PhotoPage:
         self.page.splash = None
         self.button.disabled = False
         self.page.update()
-        self.master.new_win(PrintPage, path_img)
+        self.master.new_win(PrintPage, (path_img, False))
         
     def overlay_images(self)->str:
         if self.replace is not None:
