@@ -1,5 +1,6 @@
 import flet as ft
 from components.buttons import MainButton
+import cups
 
 
 class PrintPage:
@@ -105,4 +106,11 @@ class PrintPage:
             self.page.update()
 
     def do_nothing(self, e):
-        print(f"Вы распечатаете {self.txt_number.value} копий")
+        filename = self.path_img
+	
+        conn = cups.Connection()
+        printers = conn.getPrinters()
+        for printer in printers:
+            conn.printFile(printer, filename, "PhotoBox", {"copies": f"{int(self.txt_number.value)}"})
+            
+        self.back(2)
