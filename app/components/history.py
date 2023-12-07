@@ -1,5 +1,5 @@
 import flet as ft
-from components.buttons import MainButton, MainText
+from components.buttons import MainButton, MainText, RedButton
 from components.photo_history import PhotoHistory
 
 
@@ -13,7 +13,7 @@ class HistoryPage:
         self.title = ft.Text("История сессий", size=30)
         self.session_comment = MainText("Краткое описание")
 
-        self.button_back = MainButton("Назад", self.back_main)
+        self.button_back = RedButton("Назад", self.back_main)
         
         self.lv = ft.ListView(expand=1)
 

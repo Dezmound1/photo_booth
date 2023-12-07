@@ -1,5 +1,6 @@
 import flet as ft
-from components.buttons import MainButton
+from components.buttons import MainButton, RedButton
+from time import sleep
 import cups
 
 
@@ -66,7 +67,7 @@ class PrintPage:
                 [
                     self.void_column,
                     self.row_preset,
-                    ft.Column(controls=[MainButton("Назад", self.back)]),
+                    ft.Column(controls=[RedButton("Назад", self.back)]),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             ),

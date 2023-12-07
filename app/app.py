@@ -5,6 +5,8 @@ from components.main import Main
 from components.user_choise import UserChoise
 from components.history import HistoryPage
 from components.photo_history import PhotoHistory
+from components.settings_page import Settings
+from components.settings.test_templates import TemplateTest
 
 class Pages:
     def __init__(self, page):
@@ -46,13 +48,21 @@ class Pages:
         self.page.clean()
         self.views = HistoryPage(self.page, self)
     
+    def back_settings_template(self):
+        self.page.clean()
+        self.views = Settings(self.page, self)
+    
+    def back_settings_template_all(self):
+        self.page.clean()
+        self.views = TemplateTest(self.page, self)
+    
     def back_photo_history(self):
         self.page.clean()
         self.views = PhotoHistory(self.page, self)
 
 
 def main(page: ft.Page):
-    page.window_full_screen = True
+    # page.window_full_screen = True
     Pages(page=page)
 
 

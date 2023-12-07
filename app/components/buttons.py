@@ -15,6 +15,30 @@ class MainButton(Container):
             on_click=on_click
         )
 
+class RedButton(Container):
+    def __init__(self, text, on_click):
+        super().__init__()
+        self.content = ft.ElevatedButton(
+            content=ft.Column(
+                [ft.Text(value=text, size=26)],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            height=70,
+            width=250,
+            style=ft.ButtonStyle(
+                    side={
+                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.RED),
+                    ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.BLACK)
+                },
+                    color={
+                        ft.MaterialState.HOVERED: ft.colors.GREY_800
+                    },
+            animation_duration=250,
+            ),
+            
+            on_click=on_click
+        )
+
 
 class MainText(ft.Text):
     def __init__(self, value: str):

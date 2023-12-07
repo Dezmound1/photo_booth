@@ -10,7 +10,7 @@ import base64
 import threading
 import json
 
-from components.buttons import MainButton
+from components.buttons import MainButton, RedButton
 from components.print_page import PrintPage
 
 
@@ -86,7 +86,7 @@ class PhotoPage:
                     ),
                     ft.Column(
                         [
-                            ft.Column(controls=[MainButton("Назад", lambda e: self.back(e, self.name_category))]),
+                            ft.Column(controls=[RedButton("Назад", lambda e: self.back(e, self.name_category))]),
                         ]
                     ),
                 ],
