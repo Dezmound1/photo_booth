@@ -1,16 +1,28 @@
-import flet as ft
+import pygame
+import sys
+from pygame.locals import *
 
-def main(page: ft.Page):
-    def on_keyboard(e: ft.KeyboardEvent):
-        page.add(
-            ft.Text(
-                f"Key: {e.key}, Shift: {e.shift}, Control: {e.ctrl}, Alt: {e.alt}, Meta: {e.meta}"
-            )
-        )
+# Инициализация Pygame
+pygame.init()
 
-    page.on_keyboard_event = on_keyboard
-    page.add(
-        ft.Text("Press any key with a combination of CTRL, ALT, SHIFT and META keys...")
-    )
+# Создание окна (несущественное, поскольку не будет видимого окна)
+pygame.display.set_mode((1, 1))
 
-ft.app(target=main)
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if pygame.key.get_pressed()[pygame.K_POWER]:
+                print("dd")
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == KEYDOWN:
+            print(event.key)
+            print(event.mod)
+            if event.mod & pygame.K_POWER:
+                print("dd")
+            if event.key == K_POWER:
+                print("Нажата кнопка Power")
+
+    # Задержка для управления частотой обновления
+    pygame.time.delay(10)
