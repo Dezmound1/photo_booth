@@ -1,28 +1,38 @@
-import pygame
-import sys
-from pygame.locals import *
+import tkinter as tk
+from evdev import InputDevice, categorize, ecodes
 
-# Инициализация Pygame
-pygame.init()
+def power_button_callback(event):
+    print("Power button pressed!")
 
-# Создание окна (несущественное, поскольку не будет видимого окна)
-pygame.display.set_mode((1, 1))
+# Найдем устройство кнопки питания (может потребоваться права администратора)
+power_button_device_path = None
+for device_path in InputDevice.list_devices():
+    device = InputDevice(device_path)
+    if ecodes.EV_KEY in device.capabilities():
+        keys = device.capabilities()[ecodes.EV_KEY]
+        if ecodes.KEY_POWER in keys:
+            power_button_device_path = device.path
+            break
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if pygame.key.get_pressed()[pygame.K_POWER]:
-                print("dd")
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == KEYDOWN:
-            print(event.key)
-            print(event.mod)
-            if event.mod & pygame.K_POWER:
-                print("dd")
-            if event.key == K_POWER:
-                print("Нажата кнопка Power")
+if power_button_device_path:
+    # Создаем главное окно Tkinter
+    root = tk.Tk()
+    root.title("Power Button Listener")
 
-    # Задержка для управления частотой обновления
-    pygame.time.delay(10)
+    # Создаем виджет, например, кнопку
+    button = tk.Button(root, text="Click me!")
+    button.pack()
+
+    # Привязываем обработчик события к кнопке
+    button.bind("<Button-1>", power_button_callback)
+
+    # Мониторим устройство кнопки питания
+    device = InputDevice(power_button_device_path)
+    for event in device.read_loop():
+        if event.type == ecodes.EV_KEY and event.value == 1 and event.code == ecodes.KEY_POWER:
+            power_button_callback(None)
+
+    # Запускаем главный цикл Tkinter
+    root.mainloop()
+else:
+    print("Устройство кнопки питания не найдено.")
