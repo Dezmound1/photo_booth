@@ -80,13 +80,13 @@ class HistoryPage:
         self.master.cur.execute("SELECT * FROM session WHERE id = ?", (session_id,))
         sesion = self.master.cur.fetchone()
         source_directory, name_dir = sesion[3], sesion[3].split("/")[-1]
-
+        print(source_directory, name_dir)
         usb_drives = [
             (partition.device, partition.mountpoint)
             for partition in psutil.disk_partitions()
-            if partition.fstype == "vfat" and partition.device.startswith("/dev/sdb")
+            if partition.fstype == "vfat"
         ]
-
+        print(usb_drives)
         if not usb_drives:
             print("Нет подключенных флеш-накопителей.")
             return
@@ -111,4 +111,4 @@ class HistoryPage:
                 self.page.snack_bar.open = True
                 self.page.update()
             except Exception as e:
-                pass
+                print(e)

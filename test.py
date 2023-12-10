@@ -2,9 +2,6 @@
 
 from evdev import InputDevice, categorize, ecodes
 import subprocess
-"""
-sudo evtest
-"""
 
 def main():
     device_path = '/dev/input/event2'  # Поменяйте на путь к вашему устройству
@@ -19,7 +16,7 @@ def main():
 
             # Здесь вы можете выполнить нужные вам действия.
             # Например, запустить ваш скрипт
-            subprocess.run(['./btn.sh'])
+            subprocess.run(['/home/photo/photo_booth/btn.sh'])
 
 if __name__ == "__main__":
     main()

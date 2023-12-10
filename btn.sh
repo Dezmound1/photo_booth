@@ -1,4 +1,3 @@
 #!/bin/bash
+sudo systemctl restart lightdm
 
-# Перезапуск службы KDE
-systemctl restart sddm
