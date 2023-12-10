@@ -2,6 +2,9 @@
 
 from evdev import InputDevice, categorize, ecodes
 import subprocess
+"""
+sudo evtest
+"""
 
 def main():
     device_path = '/dev/input/event2'  # Поменяйте на путь к вашему устройству
