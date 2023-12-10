@@ -1,25 +1,25 @@
-import tkinter as tk
+#!/usr/bin/env python
+
+from evdev import InputDevice, categorize, ecodes
 import subprocess
+"""
+sudo evtest
+"""
 
-class MyApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("My App")
+def main():
+    device_path = '/dev/input/event2'  # Поменяйте на путь к вашему устройству
+    device = InputDevice(device_path)
 
-        # Ваш код для создания основного интерфейса приложения
+    print(f"Monitoring events on {device_path}")
 
-        # Кнопка для запуска виртуальной клавиатуры
-        btn_open_keyboard = tk.Button(root, text="Открыть клавиатуру", command=self.open_keyboard)
-        btn_open_keyboard.pack()
+    for event in device.read_loop():
+        if event.type == ecodes.EV_KEY and event.value == 1:
+            # Обрабатываем только нажатия клавиш (EV_KEY) с состоянием 1 (нажата)
+            print(f"Key {categorize(event).keycode} pressed")
 
-    def open_keyboard(self):
-        try:
-            subprocess.Popen(['onboard'])
-        except Exception as e:
-            print(f"Error launching onboard: {e}")
+            # Здесь вы можете выполнить нужные вам действия.
+            # Например, запустить ваш скрипт
+            subprocess.run(['./btn.sh'])
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = MyApp(root)
-    root.mainloop()
-O
+    main()
