@@ -75,6 +75,7 @@ class Main:
 
     def open_dlg_modal(self, e):
         self.page.dialog = self.new_session
+        os.system("onboard")
         self.new_session.open = True
         self.page.update()
 
