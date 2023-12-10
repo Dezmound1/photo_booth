@@ -1,38 +1,36 @@
-import tkinter as tk
-from evdev import InputDevice, categorize, ecodes
+import os
+import shutil
+import psutil
 
-def power_button_callback(event):
-    print("Power button pressed!")
+def copy_to_all_usb_drives(source_directory, name_dir):
+    # Получить список подключенных флеш-накопителей
+    usb_drives = [(partition.device, partition.mountpoint) for partition in psutil.disk_partitions() if partition.fstype == 'vfat' and partition.device.startswith("/dev/sdb")]
 
-# Найдем устройство кнопки питания (может потребоваться права администратора)
-power_button_device_path = None
-for device_path in InputDevice.list_devices():
-    device = InputDevice(device_path)
-    if ecodes.EV_KEY in device.capabilities():
-        keys = device.capabilities()[ecodes.EV_KEY]
-        if ecodes.KEY_POWER in keys:
-            power_button_device_path = device.path
-            break
+    if not usb_drives:
+        print("Нет подключенных флеш-накопителей.")
+        return
 
-if power_button_device_path:
-    # Создаем главное окно Tkinter
-    root = tk.Tk()
-    root.title("Power Button Listener")
+    # Копирование на каждый флеш-накопитель
+    for usb_drive, mount_point in usb_drives:
+        target_directory = os.path.join(mount_point, name_dir)
 
-    # Создаем виджет, например, кнопку
-    button = tk.Button(root, text="Click me!")
-    button.pack()
+        try:
+            # Проверка существования папки и создание уникального имени при необходимости
+            counter = 1
+            while os.path.exists(target_directory):
+                target_directory = os.path.join(mount_point, f'{name_dir}_{counter}')
+                counter += 1
 
-    # Привязываем обработчик события к кнопке
-    button.bind("<Button-1>", power_button_callback)
+            # Копирование содержимого исходной папки на флеш-накопитель
+            shutil.copytree(source_directory, target_directory)
 
-    # Мониторим устройство кнопки питания
-    device = InputDevice(power_button_device_path)
-    for event in device.read_loop():
-        if event.type == ecodes.EV_KEY and event.value == 1 and event.code == ecodes.KEY_POWER:
-            power_button_callback(None)
+            print(f"Содержимое скопировано на {usb_drive} в {target_directory}")
+        except Exception as e:
+            print(f"Ошибка при копировании на {usb_drive}: {e}")
 
-    # Запускаем главный цикл Tkinter
-    root.mainloop()
-else:
-    print("Устройство кнопки питания не найдено.")
+# Замените SOURCE_DIRECTORY на путь к вашей исходной папке
+SOURCE_DIRECTORY = './app/templates/Приходит пудж на мид'
+name_dir = "Приходит пудж на мид"
+
+# Вызвать функцию для копирования на все подключенные флеш-накопители
+copy_to_all_usb_drives(SOURCE_DIRECTORY, name_dir)
