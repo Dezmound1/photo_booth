@@ -1,7 +1,7 @@
 import flet as ft
 
 import os
-import subprocess
+import os
 
 from components.buttons import MainButton, Alert, RedButton
 from time import sleep
@@ -59,7 +59,10 @@ class Main:
         if not self.new_session.content.value:
             print(self.new_session.content.value)
             self.new_session.content.error_text = "Нет названия"
-            self.page.update()
+            r = "no name"
+            self.close_dlg(e)
+            sleep(0.3)
+            self.master.new_win(SessionList, r)
         else:
             r = self.new_session.content.value
             self.close_dlg(e)
@@ -73,7 +76,6 @@ class Main:
     def open_dlg_modal(self, e):
         self.page.dialog = self.new_session
         self.new_session.open = True
-        subprocess.Popen(["onboard"])
         self.page.update()
 
     def shut_down(self, e):

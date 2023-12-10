@@ -1,38 +1,25 @@
 import tkinter as tk
-from evdev import InputDevice, categorize, ecodes
+import subprocess
 
-def power_button_callback(event):
-    print("Power button pressed!")
+class MyApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("My App")
 
-# Найдем устройство кнопки питания (может потребоваться права администратора)
-power_button_device_path = None
-for device_path in InputDevice.list_devices():
-    device = InputDevice(device_path)
-    if ecodes.EV_KEY in device.capabilities():
-        keys = device.capabilities()[ecodes.EV_KEY]
-        if ecodes.KEY_POWER in keys:
-            power_button_device_path = device.path
-            break
+        # Ваш код для создания основного интерфейса приложения
 
-if power_button_device_path:
-    # Создаем главное окно Tkinter
+        # Кнопка для запуска виртуальной клавиатуры
+        btn_open_keyboard = tk.Button(root, text="Открыть клавиатуру", command=self.open_keyboard)
+        btn_open_keyboard.pack()
+
+    def open_keyboard(self):
+        try:
+            subprocess.Popen(['onboard'])
+        except Exception as e:
+            print(f"Error launching onboard: {e}")
+
+if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Power Button Listener")
-
-    # Создаем виджет, например, кнопку
-    button = tk.Button(root, text="Click me!")
-    button.pack()
-
-    # Привязываем обработчик события к кнопке
-    button.bind("<Button-1>", power_button_callback)
-
-    # Мониторим устройство кнопки питания
-    device = InputDevice(power_button_device_path)
-    for event in device.read_loop():
-        if event.type == ecodes.EV_KEY and event.value == 1 and event.code == ecodes.KEY_POWER:
-            power_button_callback(None)
-
-    # Запускаем главный цикл Tkinter
+    app = MyApp(root)
     root.mainloop()
-else:
-    print("Устройство кнопки питания не найдено.")
+O
