@@ -73,7 +73,7 @@ class Main:
     def open_dlg_modal(self, e):
         self.page.dialog = self.new_session
         self.new_session.open = True
-        subprocess.Popen(["florence"])
+        subprocess.Popen(["onboard"])
         self.page.update()
 
     def shut_down(self, e):

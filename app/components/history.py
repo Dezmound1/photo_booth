@@ -111,6 +111,4 @@ class HistoryPage:
                 self.page.snack_bar.open = True
                 self.page.update()
             except Exception as e:
-                self.page.snack_bar = ft.SnackBar(ft.Text(f"Ошибка при копировании на {usb_drive}: {e}"))
-                self.page.snack_bar.open = True
-                self.page.update()
+                pass
