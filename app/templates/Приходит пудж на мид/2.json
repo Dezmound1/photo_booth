@@ -1,8 +1,1 @@
-{
-	"Width": 1240,
-	"Height": 1844,
-	"Overlay": "2.png",
-	"Photos": [
-	{"shoot": 1, "x": 87, "y": 187, "w": 1067, "h": 1147}
-	]
-}
+{"Width": 1240, "Height": 1844, "Overlay": "2.png", "Photos": [{"shoot": 1, "x": 83, "y": 185, "w": 1067, "h": 1147}]}

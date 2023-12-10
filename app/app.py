@@ -8,6 +8,7 @@ from components.photo_history import PhotoHistory
 from components.settings_page import Settings
 from components.settings.test_templates import TemplateTest
 
+
 class Pages:
     def __init__(self, page):
         self.page = page
@@ -15,7 +16,7 @@ class Pages:
         self.views = None
         self.conn = sqlite3.connect("./base.db", check_same_thread=False)
         self.cur = self.conn.cursor()
-        
+
         self.session = None
 
         self.new_win(Main)
@@ -47,15 +48,15 @@ class Pages:
     def back_settings(self):
         self.page.clean()
         self.views = HistoryPage(self.page, self)
-    
+
     def back_settings_template(self):
         self.page.clean()
         self.views = Settings(self.page, self)
-    
+
     def back_settings_template_all(self):
         self.page.clean()
         self.views = TemplateTest(self.page, self)
-    
+
     def back_photo_history(self):
         self.page.clean()
         self.views = PhotoHistory(self.page, self)

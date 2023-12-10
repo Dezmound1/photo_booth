@@ -22,16 +22,19 @@ class PhotoPage:
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
-        
+        self.size_y = self.setting_template["Photos"][0]["x"]
+        self.size_x = self.setting_template["Photos"][0]["y"]
+
         self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
-        
+
         if self.limit_img != max([i["shoot"] for i in self.setting_template["Photos"]]):
             self.limit_img = max([i["shoot"] for i in self.setting_template["Photos"]])
-            self.replace = len([i["shoot"] for i in self.setting_template["Photos"]])/max([i["shoot"] for i in self.setting_template["Photos"]])
-            
+            self.replace = len([i["shoot"] for i in self.setting_template["Photos"]]) / max(
+                [i["shoot"] for i in self.setting_template["Photos"]]
+            )
+
         self.dir_photo = self.master.session[3]
-        
-        
+
         self.count = 1
         self.list_img = []
 
@@ -82,7 +85,7 @@ class PhotoPage:
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.START,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     ),
                     ft.Column(
                         [
@@ -102,21 +105,40 @@ class PhotoPage:
         self.update_thread.start()
 
     def update_loop(self):
+        overlay_info = self.setting_template["Photos"][0]
         while True:
             if self.cap:
                 ret, frame = self.cap.read()
-                corner = int(1)
-                corner_crop = 1 + abs(corner) * 0.015
                 if ret:
+                    w = overlay_info["w"]
+                    h = overlay_info["h"]
+                        
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    (h, w) = frame.shape[:2]
-                    center = (int(w / 2), int(h / 2))
-                    rotation_matrix = cv2.getRotationMatrix2D(center, corner, corner_crop)
-                    rotated = cv2.warpAffine(frame, rotation_matrix, (w, h))
-                    new_frame = cv2.resize(rotated, (w, h))
-                    img = Image.fromarray(new_frame)
+                    img = Image.fromarray(frame)
+                    wd, hd = img.size
+                    size_index = min([wd, hd])
+
+                    list_indx = [size_index * w / h, size_index * h / w]
+                    if w > h:
+                        wd = int(max(list_indx))
+                        hd = int(min(list_indx))
+                    else:
+                        wd = int(min(list_indx))
+                        hd = int(max(list_indx))
+
+                    left = (img.size[0] - wd) / 2
+                    top = (img.size[1] - hd) / 2
+                    right = img.size[0] - (img.size[0] - wd) / 2
+                    bottom = img.size[1] - (img.size[1] - hd) / 2
+
+                    cropped_image = img.crop((left, top, right, bottom))
+                    if w > 1000:
+                        w, h = int(w/2), int(h/2)
+                    
+                    overlay = cropped_image.resize((w, h))
+
                     buffered = BytesIO()
-                    img.save(buffered, format="JPEG")
+                    overlay.save(buffered, format="JPEG")
                     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
                     self.canvas.src_base64 = img_str
                     self.page.update()
@@ -141,13 +163,14 @@ class PhotoPage:
         self.page.splash = ft.ProgressBar()
         self.button.disabled = True
         self.page.update()
-        
 
         if self.pro:
             self.pro.kill()
 
         os.system("pkill ffmpeg")
-        os.system(f"""gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png" """)
+        os.system(
+            f"""gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png" """
+        )
 
         self.page.splash = None
         self.button.disabled = False
@@ -158,13 +181,43 @@ class PhotoPage:
         name_image = self.quantity_image - 1
         count = self.count
         self.list_img.append(name_image)
+        overlay_info = self.setting_template["Photos"][0]
+        x = overlay_info["x"]
+        y = overlay_info["y"]
+        w = overlay_info["w"]
+        h = overlay_info["h"]
+
+        overlay = Image.open(f"{self.dir_photo}/photo/{name_image}.png")
+        wd, hd = overlay.size
+        size_index = min([wd, hd])
+
+        list_indx = [size_index * w / h, size_index * h / w]
+        if w > h:
+            wd = int(max(list_indx))
+            hd = int(min(list_indx))
+        else:
+            wd = int(min(list_indx))
+            hd = int(max(list_indx))
+
+        left = (overlay.size[0] - wd) / 2
+        top = (overlay.size[1] - hd) / 2
+        right = overlay.size[0] - (overlay.size[0] - wd) / 2
+        bottom = overlay.size[1] - (overlay.size[1] - hd) / 2
+
+        cropped_image = overlay.crop((left, top, right, bottom))
+
+        overlay = cropped_image.resize((w, h))
+        buffered = BytesIO()
+        overlay.save(buffered, format="JPEG")
+        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        
 
         if len(self.list_img) < self.limit_img:
             self.colum.controls.append(
                 ft.Container(
                     ft.Stack(
                         [
-                            ft.Image(src=f"{self.dir_photo}/photo/{name_image}.png"),
+                            ft.Image(src_base64=img_str),
                             ft.Container(
                                 margin=10,
                                 right=0,
@@ -176,7 +229,7 @@ class PhotoPage:
                                     icon_color="pink600",
                                     icon_size=40,
                                     tooltip="Удалить фотографию",
-                                    on_click=lambda x : self.del_img(x,name_image, count),
+                                    on_click=lambda x: self.del_img(x, name_image, count),
                                 ),
                             ),
                         ]
@@ -190,11 +243,12 @@ class PhotoPage:
             self.count += 1
             self.page.update()
         else:
+            self.count += 1
             self.colum.controls.append(
                 ft.Container(
                     ft.Stack(
                         [
-                            ft.Image(src=f"{self.dir_photo}/photo/{name_image}.png"),
+                            ft.Image(src_base64=img_str),
                             ft.Container(
                                 margin=10,
                                 right=0,
@@ -206,7 +260,7 @@ class PhotoPage:
                                     icon_color="pink600",
                                     icon_size=40,
                                     tooltip="Удалить фотографию",
-                                    on_click=lambda x : self.del_img(x,name_image, count),
+                                    on_click=lambda x: self.del_img(x, name_image, count),
                                 ),
                             ),
                         ]
@@ -218,18 +272,25 @@ class PhotoPage:
                 )
             )
             self.button.visible = False
-            self.page.controls[0].controls[1].controls[1].controls[0] = MainButton("Сформировать", on_click=self.to_print)
+            self.page.controls[0].controls[1].controls[1].controls[0] = MainButton(
+                "Сформировать", on_click=self.to_print
+            )
             self.page.update()
-            
+
     def del_img(self, e, name, count):
         self.colum.controls[count].visible = False
-        self.list_img.remove(name)
+        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton("Создать", self.take_picture)
+        try:
+            self.list_img.remove(name)
+        except:
+            pass
         os.system(f"rm {self.dir_photo}/photo/{name}.png")
+        self.page.update()
 
     def count_files_in_folder(self, folder_path):
         try:
             files = [int(name.split(".")[0]) for name in os.listdir(folder_path)]
-            return sorted(files)[-1]+1
+            return sorted(files)[-1] + 1
         except Exception as e:
             return 0
 
@@ -245,13 +306,13 @@ class PhotoPage:
         self.button.disabled = False
         self.page.update()
         self.master.new_win(PrintPage, (path_img, False))
-        
-    def overlay_images(self)->str:
+
+    def overlay_images(self) -> str:
         if self.replace is not None:
-            self.list_img = self.list_img*int(self.replace)
-        
+            self.list_img = self.list_img * int(self.replace)
+
         background = Image.open(f"./templates/{self.name_category}/{self.name_template}.png")
-        
+
         for overlay_info, name_img in zip(self.setting_template["Photos"], self.list_img):
             shoot = name_img
             x = overlay_info["x"]
@@ -260,15 +321,32 @@ class PhotoPage:
             h = overlay_info["h"]
 
             overlay = Image.open(f"{self.dir_photo}/photo/{shoot}.png")
+            wd, hd = overlay.size
+            size_index = min([wd, hd])
 
-            overlay = overlay.resize((w, h))
+            list_indx = [size_index * w / h, size_index * h / w]
+            if w > h:
+                wd = int(max(list_indx))
+                hd = int(min(list_indx))
+            else:
+                wd = int(min(list_indx))
+                hd = int(max(list_indx))
 
-            if overlay.mode != 'RGBA':
-                overlay = overlay.convert('RGBA')
+            left = (overlay.size[0] - wd) / 2
+            top = (overlay.size[1] - hd) / 2
+            right = overlay.size[0] - (overlay.size[0] - wd) / 2
+            bottom = overlay.size[1] - (overlay.size[1] - hd) / 2
+
+            cropped_image = overlay.crop((left, top, right, bottom))
+
+            overlay = cropped_image.resize((w, h))
+
+            if overlay.mode != "RGBA":
+                overlay = overlay.convert("RGBA")
 
             background.paste(overlay, (x, y), overlay)
 
         name = self.count_files_in_folder(f"{self.dir_photo}/photo_templates")
         output_path = f"{self.dir_photo}/photo_templates/{name}.png"
-        background.save(output_path, format='PNG')
+        background.save(output_path, format="PNG")
         return output_path

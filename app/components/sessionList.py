@@ -13,6 +13,10 @@ class SessionList:
         self.name = name
 
         self.namelist = os.listdir("./templates")
+        try:
+            self.namelist.remove("test_img")
+        except:
+            pass
 
         self.button_back = MainButton("Назад", self.back_main)
         self.page.add(

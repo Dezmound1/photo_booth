@@ -1,9 +1,14 @@
 import flet as ft
+
+import os
+import subprocess
+
 from components.buttons import MainButton, Alert, RedButton
 from time import sleep
 from components.sessionList import SessionList
 from components.history import HistoryPage
 from components.settings_page import Settings
+
 
 class Main:
     def __init__(self, page: ft.Page, master):
@@ -68,10 +73,11 @@ class Main:
     def open_dlg_modal(self, e):
         self.page.dialog = self.new_session
         self.new_session.open = True
+        subprocess.Popen(["onboard"])
         self.page.update()
 
     def shut_down(self, e):
-        self.page.window_destroy()
-    
+        os.system("poweroff")
+
     def settings(self, e):
         self.master.new_win(Settings)
