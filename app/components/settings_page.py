@@ -1,5 +1,5 @@
 import flet as ft
-from components.buttons import MainButton, MainText, RedButton
+from components.buttons import MainButton, RedButton
 
 class Settings:
     def __init__(self, page, master):
