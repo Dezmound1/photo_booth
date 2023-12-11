@@ -10,10 +10,21 @@ class TemplateTest:
     def __init__(self, page, master):
         self.page = page
         self.master = master
+        ft.ScrollbarTheme(radius=12)
+        
         self.list_template = self.get_file_paths()
-        self.cards = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-        self.back_btn = RedButton("Назад", self.back)
-        self.page.add(self.back_btn)
+        self.cards = ft.ListView(
+            expand=1, spacing=10, padding=20, auto_scroll=True
+        )
+        self.back_btn =  RedButton("Назад", self.back)
+        self.container = ft.Container(
+            content=self.back_btn,
+            alignment=ft.alignment.top_left,
+            width=150,
+            height=40,
+        )
+
+        self.page.add(self.container)
         self.page.add(self.cards)
         for i in self.list_template:
             self.creact_container(i)
@@ -27,7 +38,9 @@ class TemplateTest:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
 
-        file_paths = [i for i in file_paths if not i.startswith("./templates/test_img")]
+        file_paths = [
+            i for i in file_paths if not i.startswith("./templates/test_img")
+        ]
         file_paths = [i for i in file_paths if not i.endswith(".json")]
 
         return file_paths
@@ -46,9 +59,9 @@ class TemplateTest:
                 image_src=path,
             )
         )
-    
+
     def click_photo(self, e, path):
-        self.master.new_win(TemplateView,path)
-        
+        self.master.new_win(TemplateView, path)
+
     def back(self, e):
         self.master.back_settings_template()

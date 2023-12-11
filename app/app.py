@@ -64,15 +64,7 @@ class Pages:
 
 def main(page: ft.Page):
     page.window_full_screen = True
-    theme = ft.Theme()
-    theme.page_transitions.android = ft.PageTransitionTheme.OPEN_UPWARDS
-    theme.page_transitions.ios = ft.PageTransitionTheme.CUPERTINO
-    theme.page_transitions.macos = ft.PageTransitionTheme.FADE_UPWARDS
-    theme.page_transitions.linux = ft.PageTransitionTheme.ZOOM
-    theme.page_transitions.windows = ft.PageTransitionTheme.NONE
-    page.theme = theme
-    page.window_maximizable = False
-    page.window_maximized = False
+    page.bgcolor = ft.colors.BACKGROUND_CUSTOM
     Pages(page=page)
 
 
