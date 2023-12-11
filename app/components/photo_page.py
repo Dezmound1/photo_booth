@@ -25,6 +25,20 @@ class PhotoPage:
         self.size_y = self.setting_template["Photos"][0]["x"]
         self.size_x = self.setting_template["Photos"][0]["y"]
 
+        self.timer_event = threading.Event()
+        self.timer_text = ft.Row(
+            controls=[
+                ft.Text(
+                    value="",
+                    color="white",
+                    size=60,
+                    weight="bold",
+                    opacity=0.5,
+                ),
+            ], 
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+
         self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
 
         if self.limit_img != max([i["shoot"] for i in self.setting_template["Photos"]]):
@@ -43,7 +57,7 @@ class PhotoPage:
 
         self.quantity_image = self.count_files_in_folder(f"{self.dir_photo}/photo")
 
-        self.button = MainButton("Создать", self.take_picture)
+        self.button = MainButton("Сфотать", self.on_take_picture_button_click)
         self.canvas = ft.Image(
             src_base64="",
             fit=ft.ImageFit.NONE,
@@ -53,7 +67,7 @@ class PhotoPage:
         self.colum = ft.Column(
             controls=[
                 ft.Text(
-                    value="YOUR PHOTO",
+                    value="Вы прекрасны!",
                     size=40,
                     font_family="RobotoSlab",
                     weight=ft.FontWeight.W_600,
@@ -71,11 +85,11 @@ class PhotoPage:
                     ),
                     ft.Column(
                         [
-                            ft.Row(
+                            ft.Stack(
                                 [
-                                    self.canvas,
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
+                                    self.canvas, 
+                                    self.timer_text
+                                ]
                             ),
                             ft.Row(
                                 [
@@ -112,7 +126,7 @@ class PhotoPage:
                 if ret:
                     w = overlay_info["w"]
                     h = overlay_info["h"]
-                        
+
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     img = Image.fromarray(frame)
                     wd, hd = img.size
@@ -133,8 +147,8 @@ class PhotoPage:
 
                     cropped_image = img.crop((left, top, right, bottom))
                     if w > 1000:
-                        w, h = int(w/2), int(h/2)
-                    
+                        w, h = int(w / 2), int(h / 2)
+
                     overlay = cropped_image.resize((w, h))
 
                     buffered = BytesIO()
@@ -210,7 +224,6 @@ class PhotoPage:
         buffered = BytesIO()
         overlay.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
-        
 
         if len(self.list_img) < self.limit_img:
             self.colum.controls.append(
@@ -273,13 +286,13 @@ class PhotoPage:
             )
             self.button.visible = False
             self.page.controls[0].controls[1].controls[1].controls[0] = MainButton(
-                "Сформировать", on_click=self.to_print
+                "Мне нравиться !", on_click=self.to_print
             )
             self.page.update()
 
     def del_img(self, e, name, count):
         self.colum.controls[count].visible = False
-        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton("Создать", self.take_picture)
+        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton("Сфотать", self.on_take_picture_button_click)
         try:
             self.list_img.remove(name)
         except:
@@ -347,6 +360,22 @@ class PhotoPage:
             background.paste(overlay, (x, y), overlay)
 
         name = self.count_files_in_folder(f"{self.dir_photo}/photo_templates")
-        output_path = f"{self.dir_photo}/photo_templates/{name}.png"
+        name_tempalate_name = self.name_template
+        output_path = f"{self.dir_photo}/photo_templates/{name_tempalate_name}_{name}.png"
         background.save(output_path, format="PNG")
         return output_path
+
+    def start_timer(self, remaining_time):
+        if remaining_time > 0:
+            self.timer_text.controls[0].value = str(remaining_time)
+            self.page.update()
+            threading.Timer(1, self.start_timer, args=[remaining_time - 1]).start()
+        else:
+            self.timer_text.controls[0].value = str("")
+            self.timer_event.set()
+            
+    def on_take_picture_button_click(self, e):
+        self.timer_event.clear()
+        self.start_timer(3)
+        self.timer_event.wait()
+        self.take_picture(None)

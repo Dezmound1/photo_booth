@@ -1,7 +1,11 @@
 import flet as ft
-from components.buttons import MainButton, RedButton
-from time import sleep
 import cups
+
+from time import sleep
+import json
+
+from components.buttons import MainButton, RedButton
+
 
 
 class PrintPage:
@@ -10,6 +14,9 @@ class PrintPage:
         self.master = master
         self.path_img = path_img[0]
         self.is_history = path_img[1]
+        path = "./templates/" + self.master.session[4] + "/" + path_img[0].split("/")[-1].split(".")[0].split("_")[0] + ".json"
+        self.setting = json.load(open(path))
+        self.cut = self.setting.get("ComboPrint")
         self.name_category = self.master.session[4]
         
         page.title = "Print your photo"
@@ -59,7 +66,7 @@ class PrintPage:
             ]
         )
         self.done_button = ft.Column(
-            controls=[MainButton("Распечатать", self.do_nothing)]
+            controls=[MainButton("Печать фото", self.do_nothing)]
         )
 
         self.page.add(
@@ -108,10 +115,14 @@ class PrintPage:
 
     def do_nothing(self, e):
         filename = self.path_img
-	
+        if self.cut:
+            setting = {"copies": f"{int(self.txt_number.value)}"}
+        else:
+            setting = {"copies": f"{int(self.txt_number.value)}", 'media': 'custom_104.99x162.56mm_104.99x162.56mm'}
+        
         conn = cups.Connection()
         printers = conn.getPrinters()
         for printer in printers:
-            conn.printFile(printer, filename, "PhotoBox", {"copies": f"{int(self.txt_number.value)}"})
+            conn.printFile(printer, filename, "PhotoBox", setting)
             
         self.back(2)

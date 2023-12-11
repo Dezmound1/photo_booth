@@ -74,7 +74,7 @@ class HistoryPage:
     def resume_session(self, e, session_id):
         self.master.cur.execute("SELECT * FROM session WHERE id = ?", (session_id,))
         self.master.session = self.master.cur.fetchone()
-        self.master.user_choise()
+        self.master.go_camera_main()
 
     def copy_to_all_usb_drives(self, e, session_id):
         self.master.cur.execute("SELECT * FROM session WHERE id = ?", (session_id,))

@@ -1,5 +1,9 @@
 import flet as ft
 import sqlite3
+import cups
+
+import time
+import threading
 
 from components.main import Main
 from components.user_choise import UserChoise
@@ -7,7 +11,19 @@ from components.history import HistoryPage
 from components.photo_history import PhotoHistory
 from components.settings_page import Settings
 from components.settings.test_templates import TemplateTest
+from components.page_preview import PreviewsPage
 
+
+def get_total_active_jobs():
+    conn = cups.Connection()
+    printers = conn.getPrinters()
+
+    total_jobs = 0
+
+    for printer_name in printers:
+        total_jobs += len(conn.getJobs().keys())
+
+    return total_jobs
 
 class Pages:
     def __init__(self, page):
@@ -18,7 +34,17 @@ class Pages:
         self.cur = self.conn.cursor()
 
         self.session = None
+        page.banner = ft.Banner(
+            bgcolor=ft.colors.LIGHT_BLUE_800,
+            actions=[
+                ft.TextButton("Скрить", on_click=self.close_banner),
+            ],
+        )
 
+        thread = threading.Thread(target=self.check_jobs)
+        thread.daemon = True
+        thread.start()
+        
         self.new_win(Main)
 
     def new_win(self, class_name_page, params=None):
@@ -61,18 +87,37 @@ class Pages:
         self.page.clean()
         self.views = PhotoHistory(self.page, self)
 
+    def close_banner(self,e):
+        self.page.banner.open = False
+        self.page.update()
+
+    def show_banner_click(self,e):
+        self.page.banner.open = True
+        self.page.update()
+
+    def check_jobs(self):
+        while True:
+            total_jobs = get_total_active_jobs()
+            if total_jobs > 0:
+                self.page.banner.open = True
+                self.page.banner.content=ft.Text(
+                    f"{total_jobs}"
+                )
+                self.page.update()
+            else:
+                self.page.banner.open = False
+                self.page.banner.content=ft.Text(
+                    f"{total_jobs}"
+                )
+                self.page.update()
+            time.sleep(1) 
+            
+    def go_camera_main(self):
+        self.page.clean()
+        self.views = PreviewsPage(self.page, self)
 
 def main(page: ft.Page):
     page.window_full_screen = True
-    theme = ft.Theme()
-    theme.page_transitions.android = ft.PageTransitionTheme.OPEN_UPWARDS
-    theme.page_transitions.ios = ft.PageTransitionTheme.CUPERTINO
-    theme.page_transitions.macos = ft.PageTransitionTheme.FADE_UPWARDS
-    theme.page_transitions.linux = ft.PageTransitionTheme.ZOOM
-    theme.page_transitions.windows = ft.PageTransitionTheme.NONE
-    page.theme = theme
-    page.window_maximizable = False
-    page.window_maximized = False
     Pages(page=page)
 
 

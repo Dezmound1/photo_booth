@@ -63,7 +63,7 @@ class SessionList:
         self.master.cur.execute("SELECT * FROM session WHERE id = ?", (last_row_id,))
 
         self.master.session = self.master.cur.fetchone()
-        self.master.user_choise()
+        self.master.go_camera_main()
 
     def back_main(self, e):
         self.master.back_main_page()
