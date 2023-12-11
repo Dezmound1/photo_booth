@@ -1,7 +1,7 @@
 import os
 
 import flet as ft
-from components.buttons import MainButton, MainText
+from components.buttons import BackButton, MainText
 from components.print_page import PrintPage
 
 
@@ -10,11 +10,11 @@ class PhotoHistory:
         self.master = master
         self.page = page
         self.dir_photo = self.master.session[3]
-        
+
         self.name_list = os.listdir(f"{self.dir_photo}/photo_templates")
         self.path = f"{self.dir_photo}/photo_templates/"
-    
-        self.button_back = MainButton("Назад", self.back)
+
+        self.button_back = BackButton("Назад", self.back)
         self.page.add(
             ft.Row(
                 [self.button_back],
@@ -39,12 +39,12 @@ class PhotoHistory:
             border_radius=10,
             ink=True,
             on_click=lambda e: self.photo_print(e, name),
-            image_src=self.path+name,
+            image_src=self.path + name,
         )
-    
+
     def photo_print(self, e, name):
         path_phoro = self.path + name
         self.master.new_win(PrintPage, (path_phoro, True))
-    
+
     def back(self, e):
         self.master.back_settings()

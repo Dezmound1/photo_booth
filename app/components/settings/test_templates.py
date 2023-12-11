@@ -10,6 +10,8 @@ class TemplateTest:
     def __init__(self, page, master):
         self.page = page
         self.master = master
+        ft.ScrollbarTheme(radius=12)
+        
         self.list_template = self.get_file_paths()
         self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
         self.content = ft.Row(
@@ -57,7 +59,9 @@ class TemplateTest:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
 
-        file_paths = [i for i in file_paths if not i.startswith("./templates/test_img")]
+        file_paths = [
+            i for i in file_paths if not i.startswith("./templates/test_img")
+        ]
         file_paths = [i for i in file_paths if not i.endswith(".json")]
 
         return file_paths
@@ -76,10 +80,10 @@ class TemplateTest:
                 image_src=path,
             )
         )
-    
+
     def click_photo(self, e, path):
-        self.master.new_win(TemplateView,path)
-        
+        self.master.new_win(TemplateView, path)
+
     def back(self, e):
         self.master.back_settings_template()
         
