@@ -112,7 +112,7 @@ class UserChoise:
         self.cards.controls.append(
             ft.ElevatedButton(
                 content=ft.Image(
-                    src_base64 = self.overlay_images(1,name),
+                    src = self.overlay_images(1,name),
                     width=320,
                     height=622,
                 ),
@@ -150,11 +150,27 @@ class UserChoise:
         self.stop_thread = True
         
         
-    def overlay_images(self,e,img_name):
+    def overlay_images(self, e, img_name):
+        template_path = f"./templates/{self.name_category}/{img_name}.png"
+        if not os.path.exists(template_path):
+            raise FileNotFoundError(f"Template file not found: {template_path}")
 
-        background = Image.open(f"./templates/{self.name_category}/{img_name}.png")
-        setting_template = json.load(open(f"./templates/{self.name_category}/{img_name}.json"))
+        background = Image.open(template_path)
+        setting_template_path = f"./templates/{self.name_category}/{img_name}.json"
+        if not os.path.exists(setting_template_path):
+            raise FileNotFoundError(f"Setting template file not found: {setting_template_path}")
+
+        setting_template = json.load(open(setting_template_path))
+
         list_img = ["./templates/test_img/0.png"] * len(setting_template["Photos"])
+        
+        output_folder = f"./prive_template/{self.name_category}"
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        output_path = f"{output_folder}/{img_name}.png"
+        if not os.path.exists(output_folder):
+            return output_path
 
         for overlay_info, name_img in zip(setting_template["Photos"], list_img):
             shoot = name_img
@@ -176,8 +192,6 @@ class UserChoise:
             (int(int(setting_template["Width"]) / 2), int(int(setting_template["Height"]) / 2))
         )
 
-        buffered = BytesIO()
-        scaled_background.save(buffered, format="PNG")
-        base64_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        scaled_background.save(output_path, format="PNG")
 
-        return base64_image
+        return output_path

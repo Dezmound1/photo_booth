@@ -230,8 +230,8 @@ class TemplateView:
 
         scaled_background = background.resize(
             (
-                int(int(self.setting_template["Width"]) / 2),
-                int(int(self.setting_template["Height"]) / 2),
+                int(int(self.setting_template["Width"]) / 3),
+                int(int(self.setting_template["Height"]) / 3),
             )
         )
 
