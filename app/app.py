@@ -64,7 +64,7 @@ class Pages:
 
 def main(page: ft.Page):
     page.window_full_screen = True
-    page.bgcolor = ft.colors.BACKGROUND_CUSTOM
+    page.theme_mode = "DARK"
     Pages(page=page)
 
 
