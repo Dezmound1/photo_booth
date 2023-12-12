@@ -19,6 +19,8 @@ class PhotoPage:
         self.master = master
         self.page = page
         self.name_template = name
+        self.screen_height = 1000
+        self.screen_width = 800
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
@@ -35,7 +37,7 @@ class PhotoPage:
                     weight="bold",
                     opacity=0.5,
                 ),
-            ], 
+            ],
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
@@ -85,12 +87,7 @@ class PhotoPage:
                     ),
                     ft.Column(
                         [
-                            ft.Stack(
-                                [
-                                    self.canvas, 
-                                    self.timer_text
-                                ]
-                            ),
+                            ft.Stack([self.canvas, self.timer_text]),
                             ft.Row(
                                 [
                                     self.button,
@@ -120,40 +117,40 @@ class PhotoPage:
 
     def update_loop(self):
         overlay_info = self.setting_template["Photos"][0]
+        target_aspect_ratio = overlay_info["w"] / overlay_info["h"]
+
+        # Предполагаем, что размер экрана доступен как self.screen_width и self.screen_height
+        max_height = 550  # Изображение не должно превышать половину высоты экрана
+
         while True:
             if self.cap:
                 ret, frame = self.cap.read()
                 if ret:
-                    w = overlay_info["w"]
-                    h = overlay_info["h"]
-
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     img = Image.fromarray(frame)
-                    wd, hd = img.size
-                    size_index = min([wd, hd])
 
-                    list_indx = [size_index * w / h, size_index * h / w]
-                    if w > h:
-                        wd = int(max(list_indx))
-                        hd = int(min(list_indx))
+                    current_aspect_ratio = img.width / img.height
+                    if current_aspect_ratio > target_aspect_ratio:
+                        new_width = int(img.height * target_aspect_ratio)
+                        left = (img.width - new_width) // 2
+                        right = left + new_width
+                        img = img.crop((left, 0, right, img.height))
+                    elif current_aspect_ratio < target_aspect_ratio:
+                        new_height = int(img.width / target_aspect_ratio)
+                        top = (img.height - new_height) // 2
+                        bottom = top + new_height
+                        img = img.crop((0, top, img.width, bottom))
+
+                    # Дополнительно изменяем размер до целевых параметров
+                    if max_height < overlay_info["h"]:
+                        img = img.resize((overlay_info["w"] // 2, overlay_info["h"] // 2), Image.Resampling.LANCZOS)
                     else:
-                        wd = int(min(list_indx))
-                        hd = int(max(list_indx))
-
-                    left = (img.size[0] - wd) / 2
-                    top = (img.size[1] - hd) / 2
-                    right = img.size[0] - (img.size[0] - wd) / 2
-                    bottom = img.size[1] - (img.size[1] - hd) / 2
-
-                    cropped_image = img.crop((left, top, right, bottom))
-                    if w > 1000:
-                        w, h = int(w / 2), int(h / 2)
-
-                    overlay = cropped_image.resize((w, h))
+                        img = img.resize((overlay_info["w"], overlay_info["h"]), Image.Resampling.LANCZOS)
 
                     buffered = BytesIO()
-                    overlay.save(buffered, format="JPEG")
+                    img.save(buffered, format="JPEG")
                     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
                     self.canvas.src_base64 = img_str
                     self.page.update()
             time.sleep(0.05)
@@ -183,7 +180,7 @@ class PhotoPage:
 
         os.system("pkill ffmpeg")
         os.system(
-            f"""gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png" """
+            f'gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png"'
         )
 
         self.page.splash = None
@@ -196,31 +193,40 @@ class PhotoPage:
         count = self.count
         self.list_img.append(name_image)
         overlay_info = self.setting_template["Photos"][0]
-        x = overlay_info["x"]
-        y = overlay_info["y"]
-        w = overlay_info["w"]
-        h = overlay_info["h"]
+        x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
 
-        overlay = Image.open(f"{self.dir_photo}/photo/{name_image}.png")
-        wd, hd = overlay.size
-        size_index = min([wd, hd])
+        # Путь к только что сделанному снимку
+        photo_path = f"{self.dir_photo}/photo/{name_image}.png"
 
-        list_indx = [size_index * w / h, size_index * h / w]
-        if w > h:
-            wd = int(max(list_indx))
-            hd = int(min(list_indx))
-        else:
-            wd = int(min(list_indx))
-            hd = int(max(list_indx))
+        # Открываем изображение и получаем его размеры
+        overlay = Image.open(photo_path)
+        target_aspect_ratio = w / h  # Целевое соотношение сторон
 
-        left = (overlay.size[0] - wd) / 2
-        top = (overlay.size[1] - hd) / 2
-        right = overlay.size[0] - (overlay.size[0] - wd) / 2
-        bottom = overlay.size[1] - (overlay.size[1] - hd) / 2
+        # Получаем текущее соотношение сторон изображения
+        current_aspect_ratio = overlay.width / overlay.height
 
-        cropped_image = overlay.crop((left, top, right, bottom))
+        if current_aspect_ratio > target_aspect_ratio:
+            # Если изображение слишком широкое, обрезаем по ширине
+            new_width = int(overlay.height * target_aspect_ratio)
+            left = (overlay.width - new_width) // 2
+            right = (overlay.width + new_width) // 2
+            top = 0
+            bottom = overlay.height
+            overlay = overlay.crop((left, top, right, bottom))
+        elif current_aspect_ratio < target_aspect_ratio:
+            # Если изображение слишком высокое, обрезаем по высоте
+            new_height = int(overlay.width / target_aspect_ratio)
+            top = (overlay.height - new_height) // 2
+            bottom = (overlay.height + new_height) // 2
+            left = 0
+            right = overlay.width
+            overlay = overlay.crop((left, top, right, bottom))
 
-        overlay = cropped_image.resize((w, h))
+        # Изменение размера обрезанного изображения
+        overlay = overlay.resize(
+            (w, h), Image.Resampling.LANCZOS
+        )  # Image.ANTIALIAS заменено на Image.Resampling.LANCZOS
+
         buffered = BytesIO()
         overlay.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -292,7 +298,9 @@ class PhotoPage:
 
     def del_img(self, e, name, count):
         self.colum.controls[count].visible = False
-        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton("Сфотать", self.on_take_picture_button_click)
+        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton(
+            "Сфотать", self.on_take_picture_button_click
+        )
         try:
             self.list_img.remove(name)
         except:
@@ -324,46 +332,49 @@ class PhotoPage:
         if self.replace is not None:
             self.list_img = self.list_img * int(self.replace)
 
-        background = Image.open(f"./templates/{self.name_category}/{self.name_template}.png")
+        # Путь к фоновому изображению из настроек шаблона
+        background_path = f"./templates/{self.name_category}/{self.name_template}.png"
+        background = Image.open(background_path)
 
         for overlay_info, name_img in zip(self.setting_template["Photos"], self.list_img):
             shoot = name_img
-            x = overlay_info["x"]
-            y = overlay_info["y"]
-            w = overlay_info["w"]
-            h = overlay_info["h"]
+            x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
 
-            overlay = Image.open(f"{self.dir_photo}/photo/{shoot}.png")
-            wd, hd = overlay.size
-            size_index = min([wd, hd])
+            # Загрузка изображения для наложения
+            overlay_path = f"{self.dir_photo}/photo/{shoot}.png"
+            overlay = Image.open(overlay_path)
 
-            list_indx = [size_index * w / h, size_index * h / w]
-            if w > h:
-                wd = int(max(list_indx))
-                hd = int(min(list_indx))
-            else:
-                wd = int(min(list_indx))
-                hd = int(max(list_indx))
+            # Обрезка и изменение размера изображения для наложения
+            aspect_ratio = w / h
+            overlay_aspect_ratio = overlay.width / overlay.height
 
-            left = (overlay.size[0] - wd) / 2
-            top = (overlay.size[1] - hd) / 2
-            right = overlay.size[0] - (overlay.size[0] - wd) / 2
-            bottom = overlay.size[1] - (overlay.size[1] - hd) / 2
+            if overlay_aspect_ratio > aspect_ratio:
+                # Широкое изображение
+                new_width = int(overlay.height * aspect_ratio)
+                overlay = overlay.crop(
+                    ((overlay.width - new_width) // 2, 0, (overlay.width + new_width) // 2, overlay.height)
+                )
+            elif overlay_aspect_ratio < aspect_ratio:
+                # Высокое изображение
+                new_height = int(overlay.width / aspect_ratio)
+                overlay = overlay.crop(
+                    (0, (overlay.height - new_height) // 2, overlay.width, (overlay.height + new_height) // 2)
+                )
 
-            cropped_image = overlay.crop((left, top, right, bottom))
+            # Изменение размера обрезанного изображения
+            overlay = overlay.resize((w, h), Image.Resampling.LANCZOS)
 
-            overlay = cropped_image.resize((w, h))
-
+            # Установка прозрачности для изображения, если оно не имеет альфа-канала
             if overlay.mode != "RGBA":
                 overlay = overlay.convert("RGBA")
 
+            # Наложение изображения на фон
             background.paste(overlay, (x, y), overlay)
 
-        name = self.count_files_in_folder(f"{self.dir_photo}/photo_templates")
-        name_tempalate_name = self.name_template
-        output_path = f"{self.dir_photo}/photo_templates/{name_tempalate_name}_{name}.png"
-        background.save(output_path, format="PNG")
-        return output_path
+        # Сохранение итогового изображения
+        output_template = f"{self.dir_photo}/photo_templates/{self.name_template}_{self.count_files_in_folder(f'{self.dir_photo}/photo_templates')}.png"
+        background.save(output_template, format="PNG")
+        return output_template
 
     def start_timer(self, remaining_time):
         if remaining_time > 0:
@@ -373,7 +384,7 @@ class PhotoPage:
         else:
             self.timer_text.controls[0].value = str("")
             self.timer_event.set()
-            
+
     def on_take_picture_button_click(self, e):
         self.timer_event.clear()
         self.start_timer(3)

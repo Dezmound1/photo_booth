@@ -151,47 +151,64 @@ class UserChoise:
         
         
     def overlay_images(self, e, img_name):
-        template_path = f"./templates/{self.name_category}/{img_name}.png"
-        if not os.path.exists(template_path):
-            raise FileNotFoundError(f"Template file not found: {template_path}")
+        output_folder = f"./prive_template/{self.name_category}"
+        output_path = f"{output_folder}/{img_name}.png"
 
-        background = Image.open(template_path)
+        # Проверяем, существует ли уже обработанное изображение
+        if os.path.exists(output_path):
+            return output_path
+
+        # Загружаем настройки шаблона
         setting_template_path = f"./templates/{self.name_category}/{img_name}.json"
         if not os.path.exists(setting_template_path):
             raise FileNotFoundError(f"Setting template file not found: {setting_template_path}")
 
         setting_template = json.load(open(setting_template_path))
 
-        list_img = ["./templates/test_img/0.png"] * len(setting_template["Photos"])
-        
-        output_folder = f"./prive_template/{self.name_category}"
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+        # Загружаем фоновое изображение
+        template_path = f"./templates/{self.name_category}/{img_name}.png"
+        if not os.path.exists(template_path):
+            raise FileNotFoundError(f"Template file not found: {template_path}")
 
-        output_path = f"{output_folder}/{img_name}.png"
-        if not os.path.exists(output_folder):
-            return output_path
+        background = Image.open(template_path)
 
-        for overlay_info, name_img in zip(setting_template["Photos"], list_img):
-            shoot = name_img
-            x = overlay_info["x"]
-            y = overlay_info["y"]
-            w = overlay_info["w"]
-            h = overlay_info["h"]
+        # Предположим, что для демонстрации используется тестовое изображение
+        test_image_path = "./templates/test_img/0.png"
 
-            overlay = Image.open(shoot)
+        for overlay_info in setting_template["Photos"]:
+            x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
 
-            overlay = overlay.resize((w, h))
+            # Загружаем и обрабатываем изображение для наложения
+            overlay = Image.open(test_image_path)
+            target_aspect_ratio = w / h
+            overlay = self.resize_and_crop(overlay, target_aspect_ratio, w, h)
 
             if overlay.mode != "RGBA":
                 overlay = overlay.convert("RGBA")
 
             background.paste(overlay, (x, y), overlay)
 
-        scaled_background = background.resize(
-            (int(int(setting_template["Width"]) / 2), int(int(setting_template["Height"]) / 2))
-        )
-
-        scaled_background.save(output_path, format="PNG")
+        # Сохраняем обработанное изображение
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        background.save(output_path, format="PNG")
 
         return output_path
+
+    def resize_and_crop(self, image, target_aspect_ratio, new_width, new_height):
+        # Масштабируем изображение с сохранением соотношения сторон
+        current_aspect_ratio = image.width / image.height
+        if current_aspect_ratio > target_aspect_ratio:
+            new_height = int(image.width / target_aspect_ratio)
+            image = image.resize((image.width, new_height), Image.Resampling.LANCZOS)
+        else:
+            new_width = int(image.height * target_aspect_ratio)
+            image = image.resize((new_width, image.height), Image.Resampling.LANCZOS)
+
+        # Обрезаем изображение до нужных размеров
+        left = (image.width - new_width) // 2
+        top = (image.height - new_height) // 2
+        right = left + new_width
+        bottom = top + new_height
+        image = image.crop((left, top, right, bottom))
+        return image
