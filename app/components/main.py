@@ -19,6 +19,7 @@ class Main:
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
         settings = MainButton("Настройки", self.settings)
+
         shut_down = RedButton("Выключить", self.shut_down)
         self.page.add(
             ft.Column(
@@ -45,6 +46,7 @@ class Main:
                     ),
                 ],
                 spacing=20,
+                alignment=ft.MainAxisAlignment.CENTER,
             )
         )
 

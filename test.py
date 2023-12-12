@@ -1,22 +1,43 @@
-#!/usr/bin/env python
+import flet as ft
 
-from evdev import InputDevice, categorize, ecodes
-import subprocess
+def main(page: ft.Page):
+    page.update()
 
-def main():
-    device_path = '/dev/input/event2'  # Поменяйте на путь к вашему устройству
-    device = InputDevice(device_path)
+    def add_container(e):
+        # Создание нового контейнера
+        new_container = ft.Container(
+            content=ft.Text(
+                value="00", color="white", size=40, weight="bold", text_align="center"
+            ),
+            border_radius=30,
+            width=70,
+            height=70,
+            bgcolor=ft.colors.RED,
+            opacity=0.5,
+        )
 
-    print(f"Monitoring events on {device_path}")
+        # Создание кнопки для удаления контейнера
+        remove_button = ft.ElevatedButton(
+            text="Удалить",
+            on_click=lambda e: remove_container(new_container, remove_button)
+        )
 
-    for event in device.read_loop():
-        if event.type == ecodes.EV_KEY and event.value == 1:
-            # Обрабатываем только нажатия клавиш (EV_KEY) с состоянием 1 (нажата)
-            print(f"Key {categorize(event).keycode} pressed")
+        # Добавление контейнера и кнопки в колонку
+        col.controls.extend([new_container, remove_button])
+        page.update()
 
-            # Здесь вы можете выполнить нужные вам действия.
-            # Например, запустить ваш скрипт
-            subprocess.run(['/home/photo/photo_booth/btn.sh'])
+    def remove_container(container, button):
+        # Удаление контейнера и кнопки
+        col.controls.remove(container)
+        col.controls.remove(button)
+        page.update()
 
-if __name__ == "__main__":
-    main()
+    # Инициализация главной колонки и кнопки добавления
+    col = ft.Column([])
+    add_button = ft.ElevatedButton("Добавить", on_click=add_container)
+
+    # Добавление колонки и кнопки на страницу
+    page.add(col)
+    page.add(add_button)
+
+ft.app(target=main)

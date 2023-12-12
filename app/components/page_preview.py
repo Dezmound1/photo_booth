@@ -16,9 +16,9 @@ class PreviewsPage:
     def __init__(self, page: ft.Page, master):
         self.master = master
         self.page = page
-        
+
         self.master.rerun_process_camera()
-        
+
         self.button = MainButton("Сфотать", self.go_photo)
         self.canvas = ft.Image(
             src_base64="",
@@ -52,17 +52,14 @@ class PreviewsPage:
             )
         )
 
-        self.cap = None
-        self.connect_camera(3)
-
         self.update_thread = threading.Thread(target=self.update_loop)
         self.update_thread.daemon = True
         self.update_thread.start()
 
     def update_loop(self):
         while True:
-            if self.cap:
-                ret, frame = self.cap.read()
+            if self.master.cap:
+                ret, frame = self.master.cap.read()
                 if ret:
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     img = Image.fromarray(frame)
@@ -74,18 +71,5 @@ class PreviewsPage:
                     self.page.update()
             time.sleep(0.05)
 
-    def connect_camera(self, camera_num):
-        timeout = 10  # время ожидания подключения в секундах
-        start_time = time.time()
-        while True:
-            self.cap = cv2.VideoCapture(camera_num)
-            if self.cap.isOpened():
-                break
-            elif (time.time() - start_time) > timeout:
-                self.master.kill_process_camera()
-                raise RuntimeError("Не удалось подключиться к камере")
-            else:
-                time.sleep(0.5)
-                
     def go_photo(self, e):
         self.master.user_choise()

@@ -19,9 +19,10 @@ class PhotoPage:
         self.master = master
         self.page = page
         self.name_template = name
-        
+        self.dlg_modal = None
+
         self.master.rerun_process_camera()
-        
+
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
@@ -29,18 +30,7 @@ class PhotoPage:
         self.size_x = self.setting_template["Photos"][0]["y"]
 
         self.timer_event = threading.Event()
-        self.timer_text = ft.Row(
-            controls=[
-                ft.Text(
-                    value="",
-                    color="white",
-                    size=60,
-                    weight="bold",
-                    opacity=0.5,
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
+        self.timer_text = ft.Row([ft.Text()])
 
         self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
 
@@ -106,9 +96,6 @@ class PhotoPage:
             )
         )
 
-        self.cap = None
-        self.connect_camera(3)
-
         self.update_thread = threading.Thread(target=self.update_loop)
         self.update_thread.daemon = True
         self.update_thread.start()
@@ -121,8 +108,8 @@ class PhotoPage:
         max_height = 550  # Изображение не должно превышать половину высоты экрана
 
         while True:
-            if self.cap:
-                ret, frame = self.cap.read()
+            if self.master.cap:
+                ret, frame = self.master.cap.read()
                 if ret:
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     img = Image.fromarray(frame)
@@ -153,23 +140,9 @@ class PhotoPage:
                     self.page.update()
             time.sleep(0.05)
 
-    def connect_camera(self, camera_num):
-        timeout = 10  # время ожидания подключения в секундах
-        start_time = time.time()
-        while True:
-            self.cap = cv2.VideoCapture(camera_num)
-            if self.cap.isOpened():
-                break
-            elif (time.time() - start_time) > timeout:
-                self.master.kill_process_camera()
-                raise RuntimeError("Не удалось подключиться к камере")
-            else:
-                time.sleep(0.5)
-
     def take_picture(self, e):
-        
         self.master.kill_process_camera()
-        
+
         os.system(
             f'gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png"'
         )
@@ -179,7 +152,7 @@ class PhotoPage:
         self.page.update()
 
         self.master.rerun_process_camera()
-        
+
         self.quantity_image += 1
         name_image = self.quantity_image - 1
         count = self.count
@@ -282,17 +255,14 @@ class PhotoPage:
                     height=250,
                 )
             )
-            self.button.visible = False
-            self.page.controls[0].controls[1].controls[1].controls[0] = MainButton(
-                "Мне нравиться !", on_click=self.to_print
-            )
+            self.button.content.content.controls[0].value = "Посмотреть"
+            self.button.content.on_click = self.to_print
             self.page.update()
 
     def del_img(self, e, name, count):
         self.colum.controls[count].visible = False
-        self.page.controls[0].controls[1].controls[1].controls[0] = MainButton(
-            "Сфотать", self.on_take_picture_button_click
-        )
+        self.button.content.content.controls[0].value = "Сфотать"
+        self.button.content.on_click = self.on_take_picture_button_click
         try:
             self.list_img.remove(name)
         except:
@@ -315,10 +285,38 @@ class PhotoPage:
         self.button.disabled = True
         self.page.update()
         path_img = self.overlay_images()
+        self.dlg_modal = ft.AlertDialog(
+            modal=True,
+            content=ft.Row(
+                [
+                    ft.Container(
+                        border_radius=8,
+                        padding=5,
+                        width=420,
+                        height=700,
+                        image_src=path_img,
+                    ),
+                ]
+            ),
+            actions=[
+                ft.TextButton("Мне нравиться !", on_click=lambda e: self.go_printer(e, path_img)),
+                ft.TextButton("Не нравиться", on_click=self.close_dlg),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
         self.page.splash = None
         self.button.disabled = False
         self.page.update()
-        self.master.new_win(PrintPage, (path_img, False))
+        self.page.dialog = self.dlg_modal
+        self.dlg_modal.open = True
+        self.page.update()
+    
+    def go_printer(self, e, path):
+        self.master.new_win(PrintPage, (path, False))
+    
+    def close_dlg(self,e):
+        self.dlg_modal.open = False
+        self.page.update()
 
     def overlay_images(self) -> str:
         if self.replace is not None:
@@ -370,11 +368,29 @@ class PhotoPage:
 
     def start_timer(self, remaining_time):
         if remaining_time > 0:
-            self.timer_text.controls[0].value = str(remaining_time)
+            self.timer_text.controls[0] = ft.Row(
+                [
+                    ft.Stack(
+                        [
+                            ft.Container(
+                                content=ft.Text(value=f"{str(remaining_time)}", color="white", size=90, weight="bold"),
+                                alignment=ft.alignment.center,
+                                border_radius=100,
+                                width=150,
+                                height=150,
+                                bgcolor=ft.colors.RED,
+                                opacity=0.5,
+                            )
+                        ]
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                visible=True,
+            )
             self.page.update()
             threading.Timer(1, self.start_timer, args=[remaining_time - 1]).start()
         else:
-            self.timer_text.controls[0].value = str("")
+            self.timer_text.controls[0] = ft.Row([ft.Text(value="")])
             self.timer_event.set()
 
     def on_take_picture_button_click(self, e):
