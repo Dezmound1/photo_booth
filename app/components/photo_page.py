@@ -19,8 +19,6 @@ class PhotoPage:
         self.master = master
         self.page = page
         self.name_template = name
-        self.screen_height = 1000
-        self.screen_width = 800
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
@@ -171,10 +169,7 @@ class PhotoPage:
                 time.sleep(0.5)
 
     def take_picture(self, e):
-        self.page.splash = ft.ProgressBar()
-        self.button.disabled = True
-        self.page.update()
-
+        
         if self.pro:
             self.pro.kill()
 
@@ -387,6 +382,9 @@ class PhotoPage:
 
     def on_take_picture_button_click(self, e):
         self.timer_event.clear()
+        self.page.splash = ft.ProgressBar()
+        self.button.disabled = True
+        self.page.update()
         self.start_timer(3)
         self.timer_event.wait()
         self.take_picture(None)

@@ -119,12 +119,17 @@ class HistoryPage:
         self.master.session = self.master.cur.fetchone()
         self.master.go_camera_main()
 
+    def close_banner(self, e):
+        self.page.banner.open = False
+        self.page.update()
+
+
     def copy_to_all_usb_drives(self, e, session_id):
         self.master.cur.execute(
             "SELECT * FROM session WHERE id = ?", (session_id,)
         )
         sesion = self.master.cur.fetchone()
-        source_directory, name_dir = sesion[3], sesion[3].split("/")[-1]
+        source_directory, name_dir = sesion[3]+"/photo_templates", sesion[3].split("/")[-1]
         print(source_directory, name_dir)
         usb_drives = [
             (partition.device, partition.mountpoint)
@@ -148,16 +153,22 @@ class HistoryPage:
                         mount_point, f"{name_dir}_{counter}"
                     )
                     counter += 1
-
+                self.page.banner = ft.Banner(
+                    bgcolor=ft.colors.AMBER_100,
+                    leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
+                    content=ft.Text(
+                        f"Cодержимое скопировано на {usb_drive} в {target_directory}"
+                    ),
+                    actions=[
+                        ft.TextButton("Закрыть", on_click=self.close_banner),
+                    ],
+                )
+                print(f"Cодержимое скопировано на {usb_drive} в {target_directory}")
+                self.page.banner.open = True
+                self.page.update()
                 # Копирование содержимого исходной папки на флеш-накопитель
                 shutil.copytree(source_directory, target_directory)
-
-                self.page.snack_bar = ft.SnackBar(
-                    ft.Text(
-                        f"Содержимое скопировано на {usb_drive} в {target_directory}"
-                    )
-                )
-                self.page.snack_bar.open = True
-                self.page.update()
             except Exception as e:
+                self.page.banner.open = False
                 print(e)
+
