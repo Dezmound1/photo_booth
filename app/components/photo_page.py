@@ -19,6 +19,9 @@ class PhotoPage:
         self.master = master
         self.page = page
         self.name_template = name
+        
+        self.master.rerun_process_camera()
+        
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"./templates/{self.name_category}/{self.name_template}.json"))
         self.replace = None
@@ -51,9 +54,6 @@ class PhotoPage:
 
         self.count = 1
         self.list_img = []
-
-        self.command = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video3"
-        self.pro = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         self.quantity_image = self.count_files_in_folder(f"{self.dir_photo}/photo")
 
@@ -161,19 +161,15 @@ class PhotoPage:
             if self.cap.isOpened():
                 break
             elif (time.time() - start_time) > timeout:
-                if self.pro:
-                    self.pro.kill()
-                os.system("pkill ffmpeg")
+                self.master.kill_process_camera()
                 raise RuntimeError("Не удалось подключиться к камере")
             else:
                 time.sleep(0.5)
 
     def take_picture(self, e):
         
-        if self.pro:
-            self.pro.kill()
-
-        os.system("pkill ffmpeg")
+        self.master.kill_process_camera()
+        
         os.system(
             f'gphoto2 --capture-image-and-download --filename="{self.dir_photo}/photo/{self.quantity_image}.png"'
         )
@@ -182,7 +178,8 @@ class PhotoPage:
         self.button.disabled = False
         self.page.update()
 
-        self.pro = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.master.rerun_process_camera()
+        
         self.quantity_image += 1
         name_image = self.quantity_image - 1
         count = self.count

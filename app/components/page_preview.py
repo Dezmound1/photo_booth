@@ -16,9 +16,9 @@ class PreviewsPage:
     def __init__(self, page: ft.Page, master):
         self.master = master
         self.page = page
-
-        self.command = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video3"
-        self.pro = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        self.master.rerun_process_camera()
+        
         self.button = MainButton("Сфотать", self.go_photo)
         self.canvas = ft.Image(
             src_base64="",
@@ -82,9 +82,7 @@ class PreviewsPage:
             if self.cap.isOpened():
                 break
             elif (time.time() - start_time) > timeout:
-                if self.pro:
-                    self.pro.kill()
-                os.system("pkill ffmpeg")
+                self.master.kill_process_camera()
                 raise RuntimeError("Не удалось подключиться к камере")
             else:
                 time.sleep(0.5)

@@ -4,6 +4,8 @@ import cups
 
 import time
 import threading
+import subprocess
+import os
 
 from components.main import Main
 from components.user_choise import UserChoise
@@ -32,6 +34,9 @@ class Pages:
         self.views = None
         self.conn = sqlite3.connect("./base.db", check_same_thread=False)
         self.cur = self.conn.cursor()
+        
+        self.command = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video3"
+        self.process_camera = None
 
         self.session = None
         page.banner = ft.Banner(
@@ -48,6 +53,7 @@ class Pages:
         self.new_win(Main)
 
     def new_win(self, class_name_page, params=None):
+        self.kill_process_camera()
         if self.views:
             if not params:
                 self.page.clean()
@@ -64,34 +70,42 @@ class Pages:
                 self.views = class_name_page(self.page, self, params)
 
     def back_main_page(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = Main(self.page, self)
 
     def user_choise(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = UserChoise(self.page, self)
 
     def back_settings(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = HistoryPage(self.page, self)
 
     def back_settings_template(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = Settings(self.page, self)
 
     def back_settings_template_all(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = TemplateTest(self.page, self)
 
     def back_photo_history(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = PhotoHistory(self.page, self)
 
     def close_banner(self,e):
+        self.kill_process_camera()
         self.page.banner.open = False
         self.page.update()
 
     def show_banner_click(self,e):
+        self.kill_process_camera()
         self.page.banner.open = True
         self.page.update()
 
@@ -113,8 +127,20 @@ class Pages:
             time.sleep(1) 
             
     def go_camera_main(self):
+        self.kill_process_camera()
         self.page.clean()
         self.views = PreviewsPage(self.page, self)
+    
+    def kill_process_camera(self,):
+        self.process_camera.terminate()
+        
+        if self.process_camera.poll() is None:
+            self.process_camera.kill()
+        
+        os.system("pkill ffmpeg")
+        
+    def rerun_process_camera(self,):
+        self.process_camera = subprocess.Popen(self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def main(page: ft.Page):
     page.window_full_screen = True
