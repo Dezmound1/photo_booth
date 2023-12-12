@@ -28,9 +28,7 @@ class UserChoise:
             if name.split(".")[1] == "png"
         ]
         self.count_open = 1
-        self.page.add(
-            ft.Column(controls=[RedButton("Назад", lambda e: self.back(e))]),
-        )
+        
         self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
         self.content = ft.Row(
             [
@@ -58,13 +56,18 @@ class UserChoise:
                 alignment=ft.MainAxisAlignment.CENTER,
             )
         )
+        
         self.page.add(self.content)
+        
 
         for i in self.list_template:
             self.creact_container(i)
             self.page.update()
 
         self.page.add(self.buttom_event)
+        self.page.add(
+            ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))],alignment=ft.MainAxisAlignment.CENTER),
+        )
 
         self.mutex = threading.Lock()
 

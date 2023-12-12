@@ -25,6 +25,7 @@ def get_total_active_jobs():
 
     return total_jobs
 
+
 class Pages:
     def __init__(self, page):
         self.page = page
@@ -34,17 +35,18 @@ class Pages:
         self.cur = self.conn.cursor()
 
         self.session = None
-        page.banner = ft.Banner(
-            bgcolor=ft.colors.LIGHT_BLUE_800,
-            actions=[
-                ft.TextButton("Скрить", on_click=self.close_banner),
-            ],
+        page.banner = ft.Container(
+            border_radius=30,
+            width=70,
+            height=70,
+            bgcolor=ft.colors.RED,
+            opacity=0.5,
         )
 
         thread = threading.Thread(target=self.check_jobs)
         thread.daemon = True
         thread.start()
-        
+
         self.new_win(Main)
 
     def new_win(self, class_name_page, params=None):
@@ -87,34 +89,43 @@ class Pages:
         self.page.clean()
         self.views = PhotoHistory(self.page, self)
 
-    def close_banner(self,e):
-        self.page.banner.open = False
+    def close_banner(self, e):
+        self.page.banner.visible = False
         self.page.update()
 
-    def show_banner_click(self,e):
-        self.page.banner.open = True
+    def show_banner_click(self, e):
+        self.page.banner.visible = True
         self.page.update()
 
     def check_jobs(self):
         while True:
             total_jobs = get_total_active_jobs()
             if total_jobs > 0:
-                self.page.banner.open = True
-                self.page.banner.content=ft.Text(
-                    f"{total_jobs}"
+                self.page.banner.visible = True
+                self.page.banner.content = ft.Text(
+                    f"{total_jobs}",
+                    color="white",
+                    size=40,
+                    weight="bold",
+                    text_align="center",
                 )
                 self.page.update()
             else:
-                self.page.banner.open = False
-                self.page.banner.content=ft.Text(
-                    f"{total_jobs}"
+                self.page.banner.visible = False
+                self.page.banner.content = ft.Text(
+                    f"{total_jobs}",
+                    color="white",
+                    size=40,
+                    weight="bold",
+                    text_align="center",
                 )
                 self.page.update()
-            time.sleep(1) 
-            
+            time.sleep(1)
+
     def go_camera_main(self):
         self.page.clean()
         self.views = PreviewsPage(self.page, self)
+
 
 def main(page: ft.Page):
     page.window_full_screen = True

@@ -15,14 +15,39 @@ class Main:
         self.master = master
         self.page = page
 
-        self.new_session = Alert(event_next=self.list_session, event_close=self.close_dlg)
+        self.new_session = Alert(
+            event_next=self.list_session, event_close=self.close_dlg
+        )
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
         settings = MainButton("Настройки", self.settings)
+        self.timer_text = ft.Row(
+            [
+                ft.Stack(
+                    [
+                        ft.Container(
+                            content=ft.Text(
+                                value="00", color="white", size=90, weight="bold"
+                            ),
+                            alignment=ft.alignment.center,
+                            border_radius=100,
+                            width=150,
+                            height=150,
+                            bgcolor=ft.colors.RED,
+                            opacity=0.5,
+                        )
+                    ]
+                )
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            visible=True,
+        )
+
         shut_down = RedButton("Выключить", self.shut_down)
         self.page.add(
             ft.Column(
                 [
+                    self.timer_text,
                     ft.Row(
                         [new],
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -45,6 +70,7 @@ class Main:
                     ),
                 ],
                 spacing=20,
+                alignment=ft.MainAxisAlignment.CENTER,
             )
         )
 
