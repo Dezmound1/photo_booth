@@ -30,8 +30,8 @@ class PhotoPage:
             controls=[
                 ft.Text(
                     value="",
-                    color="white",
-                    size=60,
+                    color="red",
+                    size=100,
                     weight="bold",
                     opacity=0.5,
                 ),
