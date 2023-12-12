@@ -112,7 +112,7 @@ class UserChoise:
         self.cards.controls.append(
             ft.ElevatedButton(
                 content=ft.Image(
-                    src = self.overlay_images(1,name),
+                    src=self.overlay_images(1, name),
                     width=320,
                     height=622,
                 ),
@@ -145,11 +145,10 @@ class UserChoise:
                 if current_time - self.last_activity_time > self.inactivity_timeout:
                     self.back(None)  # Вызываем метод back, если прошло более 5 минут бездействия
             time.sleep(60)
-            
+
     def stop_tracking_thread(self):
         self.stop_thread = True
-        
-        
+
     def overlay_images(self, e, img_name):
         output_folder = f"./prive_template/{self.name_category}"
         output_path = f"{output_folder}/{img_name}.png"
@@ -196,19 +195,26 @@ class UserChoise:
         return output_path
 
     def resize_and_crop(self, image, target_aspect_ratio, new_width, new_height):
-        # Масштабируем изображение с сохранением соотношения сторон
+    # Вычисляем соотношение сторон исходного изображения
         current_aspect_ratio = image.width / image.height
-        if current_aspect_ratio > target_aspect_ratio:
-            new_height = int(image.width / target_aspect_ratio)
-            image = image.resize((image.width, new_height), Image.Resampling.LANCZOS)
-        else:
-            new_width = int(image.height * target_aspect_ratio)
-            image = image.resize((new_width, image.height), Image.Resampling.LANCZOS)
 
-        # Обрезаем изображение до нужных размеров
+        # Определяем, нужно ли масштабировать по ширине или по высоте
+        if current_aspect_ratio > target_aspect_ratio:
+            # Масштабируем по высоте, обрезаем по ширине
+            scaled_height = int(new_width / target_aspect_ratio)
+            image = image.resize((new_width, scaled_height), Image.Resampling.LANCZOS)
+        else:
+            # Масштабируем по ширине, обрезаем по высоте
+            scaled_width = int(new_height * target_aspect_ratio)
+            image = image.resize((scaled_width, new_height), Image.Resampling.LANCZOS)
+
+        # Вычисляем координаты для обрезки
         left = (image.width - new_width) // 2
         top = (image.height - new_height) // 2
         right = left + new_width
         bottom = top + new_height
+
+        # Обрезаем изображение
         image = image.crop((left, top, right, bottom))
         return image
+
