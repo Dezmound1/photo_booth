@@ -88,11 +88,17 @@ class TemplateView:
     def creact_setting(self, i):
         return ft.Column(
             [
-                ft.Text(
-                    f"Фото {i+1}",
-                    size=30,
-                    width=300,
-                    text_align=ft.TextAlign.CENTER,
+                ft.Row(
+                    [
+                        ft.Text(
+                            f"Фото {i+1}",
+                            size=30,
+                            width=270,
+                            text_align=ft.TextAlign.CENTER,
+                        ),
+                    ],
+                    width=540,
+                    alignment=ft.MainAxisAlignment.CENTER
                 ),
                 ft.Row(
                     [
@@ -108,7 +114,7 @@ class TemplateView:
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
-                                    width=300,
+                                    width=270,
                                 ),
                                 ft.Row(
                                     [
@@ -121,12 +127,67 @@ class TemplateView:
                                         ft.TextField(
                                             value="0",
                                             text_align=ft.TextAlign.RIGHT,
-                                            width=100,
+                                            width=80,
                                         ),
                                         ft.TextField(
                                             value="0",
                                             text_align=ft.TextAlign.RIGHT,
-                                            width=100,
+                                            width=80,
+                                        ),
+                                        ft.IconButton(
+                                            ft.icons.ARROW_RIGHT,
+                                            on_click=lambda e: self.plus_click(
+                                                e, 2, i
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.IconButton(
+                                            ft.icons.ARROW_DROP_DOWN,
+                                            on_click=lambda e: self.minus_click(
+                                                e, 1, i
+                                            ),
+                                        ),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    width=270,
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                        ),
+                        ft.Column(
+                            [
+                                ft.Row(
+                                    [
+                                        ft.IconButton(
+                                            ft.icons.ARROW_DROP_UP,
+                                            on_click=lambda e: self.plus_click(
+                                                e, 1, i
+                                            ),
+                                        ),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    width=270,
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.IconButton(
+                                            ft.icons.ARROW_LEFT,
+                                            on_click=lambda e: self.minus_click(
+                                                e, 2, i
+                                            ),
+                                        ),
+                                        ft.TextField(
+                                            value="0",
+                                            text_align=ft.TextAlign.RIGHT,
+                                            width=80,
+                                        ),
+                                        ft.TextField(
+                                            value="0",
+                                            text_align=ft.TextAlign.RIGHT,
+                                            width=80,
                                         ),
                                         ft.IconButton(
                                             ft.icons.ARROW_RIGHT,
@@ -146,7 +207,7 @@ class TemplateView:
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
-                                    width=300,
+                                    width=270,
                                 ),
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
@@ -157,6 +218,7 @@ class TemplateView:
                     tight=True,
                 ),
             ],
+            alignment=ft.MainAxisAlignment.CENTER
         )
 
     def minus_click(self, e, num, index):
