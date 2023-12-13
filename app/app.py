@@ -59,7 +59,7 @@ class Pages:
                 break
             elif (time.time() - start_time) > timeout:
                 self.kill_process_camera()
-                raise RuntimeError("Не удалось подключиться к камере")
+                break
             else:
                 time.sleep(0.5)
 
