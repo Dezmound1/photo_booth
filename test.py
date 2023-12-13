@@ -9,6 +9,7 @@ def main(page: ft.Page):
             content=ft.Text(
                 value="00", color="white", size=40, weight="bold", text_align="center"
             ),
+            
             border_radius=30,
             width=70,
             height=70,
