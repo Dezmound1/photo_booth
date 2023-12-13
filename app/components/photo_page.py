@@ -312,6 +312,8 @@ class PhotoPage:
         self.page.update()
     
     def go_printer(self, e, path):
+        self.close_dlg(e)
+        time.sleep(.3)
         self.master.new_win(PrintPage, (path, False))
     
     def close_dlg(self,e):
