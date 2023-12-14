@@ -206,8 +206,8 @@ class TemplateView:
             else:
                 self.setting_template["Photos"][index]["x"] -= 1
         else:
-            if num == 1:
-                self.setting_template["Photos"][index]["w"] += 1
+            if num == 2:
+                self.setting_template["Photos"][index]["w"] -= 1
             else:
                 self.setting_template["Photos"][index]["h"] -= 1
         
@@ -224,8 +224,8 @@ class TemplateView:
             else:
                 self.setting_template["Photos"][index]["x"] += 1
         else:
-            if num == 1:
-                self.setting_template["Photos"][index]["w"] -= 1
+            if num == 2:
+                self.setting_template["Photos"][index]["w"] += 1
             else:
                 self.setting_template["Photos"][index]["h"] += 1
 
