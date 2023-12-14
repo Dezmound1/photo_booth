@@ -11,7 +11,8 @@ class TemplateTest:
         self.page = page
         self.master = master
         ft.ScrollbarTheme(radius=12)
-        
+        self.count_open = 1
+        self.index = 1
         self.list_template = self.get_file_paths()
         self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
         self.content = ft.Row(
@@ -67,6 +68,7 @@ class TemplateTest:
         return file_paths
 
     def creact_container(self, path):
+        i = self.index
         self.cards.controls.append(
             ft.Container(
                 margin=10,
@@ -78,8 +80,10 @@ class TemplateTest:
                 ink=True,
                 on_click=lambda e: self.click_photo(e, path),
                 image_src=path,
+                key=f"{i}"
             )
         )
+        self.index +=1
 
     def click_photo(self, e, path):
         self.master.new_win(TemplateView, path)

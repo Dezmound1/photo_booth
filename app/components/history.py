@@ -100,8 +100,13 @@ class HistoryPage:
 
     def del_session(self, e, session_id):
         self.master.cur.execute(
+            "SELECT * FROM session WHERE id = ?", (session_id,)
+        )
+        path = self.master.cur.fetchone()[3]
+        self.master.cur.execute(
             "DELETE FROM session WHERE id = ?", (session_id,)
         )
+        os.system(f"rm -fr {path}")
         self.master.conn.commit()
         self.master.new_win(HistoryPage)
 
