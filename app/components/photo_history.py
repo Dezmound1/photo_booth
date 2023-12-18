@@ -1,7 +1,7 @@
 import os
 
 import flet as ft
-from components.buttons import BackButton, MainText, RedButton
+from components.buttons import BackButton, MainText, RedButton, MainButton
 from components.print_page import PrintPage
 
 class PhotoHistory:
@@ -11,11 +11,21 @@ class PhotoHistory:
         self.dir_photo = self.master.session[3]
 
         self.index = 1
-        self.list_template = os.listdir(f"{self.dir_photo}/photo_templates")
-        self.path = f"{self.dir_photo}/photo_templates/"
-
-        self.count_open = 1
+        self.list_template_dir = os.listdir(f"{self.dir_photo}/photo_templates")
+        self.dir_activite = "dir_0"
+        self.list_template = os.listdir(f"{self.dir_photo}/photo_templates/{self.dir_activite}")
+        self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
         
+        self.count_open = 1
+        self.page.add(
+            ft.Row(
+                [
+                    self.creat_button_dir(i)
+                    for i in self.list_template_dir
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            )
+        )
         self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
         self.content = ft.Row(
             [
@@ -34,10 +44,7 @@ class PhotoHistory:
         )
         self.page.add(self.content)
         
-
-        for i in self.list_template:
-            self.creact_container(i)
-            self.page.update()
+        self.creact_slider(self.list_template)
             
         self.page.update()
         self.page.add(self.buttom_event)
@@ -45,6 +52,25 @@ class PhotoHistory:
             ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))],alignment=ft.MainAxisAlignment.CENTER),
         )
         self.page.update()
+    
+    def creat_button_dir(self, name):
+        return MainButton(name, lambda e: self.update_slider(name))
+    
+    def update_slider(self, name_dir):
+        self.index = 1
+        self.dir_activite = name_dir
+        self.list_template = os.listdir(f"{self.dir_photo}/photo_templates/{self.dir_activite}")
+        self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
+        self.count_open = 1
+        self.creact_slider(self.list_template)
+        
+    def creact_slider(self, list_photo_name):
+        self.cards.controls = []
+        self.page.update()
+        
+        for i in list_photo_name:
+            self.creact_container(i)
+            self.page.update()
     
     def creact_container(self, name):
         i = self.index

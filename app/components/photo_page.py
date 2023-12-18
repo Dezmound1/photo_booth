@@ -10,7 +10,7 @@ import base64
 import threading
 import json
 
-from components.buttons import MainButton, BackButton
+from components.buttons import MainButton, BackButton, RedButton
 from components.print_page import PrintPage
 
 
@@ -272,7 +272,7 @@ class PhotoPage:
 
     def count_files_in_folder(self, folder_path):
         try:
-            files = [int(name.split(".")[0]) for name in os.listdir(folder_path)]
+            files = [int(name.split(".")[0].split("_")[-1]) for name in os.listdir(folder_path)]
             return sorted(files)[-1] + 1
         except Exception as e:
             return 0
@@ -296,11 +296,12 @@ class PhotoPage:
                         height=700,
                         image_src=path_img,
                     ),
-                ]
+                ],
+                alignment=ft.MainAxisAlignment.CENTER
             ),
             actions=[
-                ft.TextButton("Мне нравиться !", on_click=lambda e: self.go_printer(e, path_img)),
-                ft.TextButton("Не нравиться", on_click=self.close_dlg),
+                MainButton("Мне нравиться !", on_click=lambda e: self.go_printer(e, path_img)),
+                RedButton("Не нравиться", on_click=self.close_dlg),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
@@ -364,9 +365,38 @@ class PhotoPage:
             background.paste(overlay, (x, y), overlay)
 
         # Сохранение итогового изображения
-        output_template = f"{self.dir_photo}/photo_templates/{self.name_template}_{self.count_files_in_folder(f'{self.dir_photo}/photo_templates')}.png"
+        base_path = f"{self.dir_photo}/photo_templates/"
+        output_template = f"{self.get_max_dir_path(base_path)}/{self.name_template}_{self.count_files_in_folder(self.get_max_dir_path(base_path))}.png"
         background.save(output_template, format="PNG")
         return output_template
+    
+    def get_max_dir_path(self, base_path):
+        max_dir = None
+        max_index = -1
+
+        # Iterate through directories in the base path
+        for dir_name in os.listdir(base_path):
+            if dir_name.startswith("dir_") and os.path.isdir(os.path.join(base_path, dir_name)):
+                # Extract the index from the directory name
+                try:
+                    index = int(dir_name.split("_")[1])
+                    if index > max_index:
+                        max_index = index
+                        max_dir = dir_name
+                except ValueError:
+                    continue
+
+        if max_dir is None or len(os.listdir(os.path.join(base_path, max_dir))) > 65:
+            # Create a new directory with the next index
+            new_index = max_index + 1
+            new_dir_name = f"dir_{new_index:02d}"
+            new_dir_path = os.path.join(base_path, new_dir_name)
+            os.makedirs(new_dir_path)
+            return new_dir_path
+        else:
+            # Return the path of the maximum directory
+            return os.path.join(base_path, max_dir)
+        
 
     def start_timer(self, remaining_time):
         if remaining_time > 0:

@@ -14,6 +14,7 @@ from components.history import HistoryPage
 from components.photo_history import PhotoHistory
 from components.settings_page import Settings
 from components.settings.test_templates import TemplateTest
+from components.settings.test_cut_template import TemplateCutTest
 from components.page_preview import PreviewsPage
 
 
@@ -115,6 +116,11 @@ class Pages:
         self.kill_process_camera()
         self.page.clean()
         self.views = TemplateTest(self.page, self)
+    
+    def back_settings_template_cut_all(self):
+        self.kill_process_camera()
+        self.page.clean()
+        self.views = TemplateCutTest(self.page, self)
 
     def back_photo_history(self):
         self.kill_process_camera()
@@ -183,6 +189,7 @@ class Pages:
 
 
 def main(page: ft.Page):
+    os.system("./add_usb_printers.sh")
     Pages(page=page)
 
 

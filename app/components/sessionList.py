@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 import uuid
 
-from components.buttons import BackButton, MainText, RedButton
+from components.buttons import BackButton, MainText
 
 
 class SessionList:
@@ -61,10 +61,11 @@ class SessionList:
         os.makedirs(name_dir)
         os.makedirs(name_dir + "/photo")
         os.makedirs(name_dir + "/photo_templates")
+        os.makedirs(name_dir + "/photo_templates/dir_0")
 
         self.master.cur.execute(
-            "INSERT INTO session (name, date, dir, topic) VALUES (?, ?, ?, ?)",
-            (self.name, date, name_dir, name),
+            "INSERT INTO session (name, date, dir, topic, num_printed) VALUES (?, ?, ?, ?, ?)",
+            (self.name, date, name_dir, name, 0),
         )
         last_row_id = self.master.cur.lastrowid
         self.master.conn.commit()

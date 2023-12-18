@@ -8,8 +8,6 @@ import os
 import time
 import threading
 import json
-import base64
-from io import BytesIO
 
 
 class UserChoise:
@@ -28,7 +26,7 @@ class UserChoise:
             if name.split(".")[1] == "png"
         ]
         self.count_open = 1
-        
+
         self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
         self.content = ft.Row(
             [
@@ -56,9 +54,8 @@ class UserChoise:
                 alignment=ft.MainAxisAlignment.CENTER,
             )
         )
-        
+
         self.page.add(self.content)
-        
 
         for i in self.list_template:
             self.creact_container(i)
@@ -66,7 +63,7 @@ class UserChoise:
 
         self.page.add(self.buttom_event)
         self.page.add(
-            ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))],alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER),
         )
 
         self.mutex = threading.Lock()
@@ -175,7 +172,7 @@ class UserChoise:
         background = Image.open(template_path)
 
         # Предположим, что для демонстрации используется тестовое изображение
-        test_image_path = "./templates/test_img/0.png"
+        test_image_path = "/mnt/my_vfat_partition/templates/test_img/0.png"
 
         for overlay_info in setting_template["Photos"]:
             x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
@@ -198,7 +195,7 @@ class UserChoise:
         return output_path
 
     def resize_and_crop(self, image, target_aspect_ratio, new_width, new_height):
-    # Вычисляем соотношение сторон исходного изображения
+        # Вычисляем соотношение сторон исходного изображения
         current_aspect_ratio = image.width / image.height
 
         # Определяем, нужно ли масштабировать по ширине или по высоте
@@ -220,4 +217,3 @@ class UserChoise:
         # Обрезаем изображение
         image = image.crop((left, top, right, bottom))
         return image
-
