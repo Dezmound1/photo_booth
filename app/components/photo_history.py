@@ -26,10 +26,10 @@ class PhotoHistory:
                 alignment=ft.MainAxisAlignment.CENTER,
             )
         )
-        self.cards = ft.Row(expand=1, width=1600, scroll="AUTO")
+        self.cards = ft.Row(expand=1, width=1200, scroll="AUTO")
         self.content = ft.Row(
             [
-                ft.Row([self.cards], width=1600),
+                ft.Row([self.cards], width=1200),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
         )
