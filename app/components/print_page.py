@@ -146,15 +146,16 @@ class PrintPage:
         
         filename = "./test.png"
         
-        if self.cut:
-            setting = {"copies": f"{int(self.txt_number.value)}"}
-        else:
-            setting = {"copies": f"{int(self.txt_number.value)}", 'media': 'custom_104.99x162.56mm_104.99x162.56mm'}
-        
-        conn = cups.Connection()
-        printers = conn.getPrinters()
-        for printer in printers:
-            conn.printFile(printer, filename, "PhotoBox", setting)
+        for _ in range(int(self.txt_number.value)):
+            if self.cut:
+                setting = {"copies": "1"}
+            else:
+                setting = {"copies": "1", 'media': 'custom_104.99x162.56mm_104.99x162.56mm'}
+            
+            conn = cups.Connection()
+            printers = conn.getPrinters()
+            for printer in printers:
+                conn.printFile(printer, filename, "PhotoBox", setting)
         
         self.master.cur.execute("SELECT num_printed FROM session WHERE id = ?", (self.master.session[0],))
         row = self.master.cur.fetchone()

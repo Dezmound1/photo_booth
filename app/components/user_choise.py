@@ -172,7 +172,7 @@ class UserChoise:
         background = Image.open(template_path)
 
         # Предположим, что для демонстрации используется тестовое изображение
-        test_image_path = "/mnt/my_vfat_partition/templates/test_img/0.png"
+        test_image_path = "./templates/test_img/0.png"
 
         for overlay_info in setting_template["Photos"]:
             x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]

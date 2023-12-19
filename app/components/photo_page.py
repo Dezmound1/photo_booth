@@ -22,6 +22,7 @@ class PhotoPage:
         self.dlg_modal = None
 
         self.master.rerun_process_camera()
+        self.run_loop = True
 
         self.name_category = self.master.session[4]
         self.setting_template = json.load(open(f"/mnt/my_vfat_partition/templates/{self.name_category}/{self.name_template}.json"))
@@ -107,7 +108,7 @@ class PhotoPage:
         # Предполагаем, что размер экрана доступен как self.screen_width и self.screen_height
         max_height = 550  # Изображение не должно превышать половину высоты экрана
 
-        while True:
+        while self.run_loop:
             if self.master.cap:
                 ret, frame = self.master.cap.read()
                 if ret:
@@ -278,6 +279,8 @@ class PhotoPage:
             return 0
 
     def back(self, e, name):
+        self.run_loop = False
+        self.update_thread.join()
         self.master.user_choise()
 
     def to_print(self, e):
@@ -313,8 +316,9 @@ class PhotoPage:
         self.page.update()
     
     def go_printer(self, e, path):
+        self.run_loop = False
+        self.update_thread.join()
         self.close_dlg(e)
-        time.sleep(.3)
         self.master.new_win(PrintPage, (path, False))
     
     def close_dlg(self,e):

@@ -18,6 +18,7 @@ class PreviewsPage:
         self.page = page
 
         self.master.rerun_process_camera()
+        self.run_loop = True
 
         self.button = MainButton("Сфотать", self.go_photo)
         self.canvas = ft.Image(
@@ -57,7 +58,7 @@ class PreviewsPage:
         self.update_thread.start()
 
     def update_loop(self):
-        while True:
+        while self.run_loop:
             if self.master.cap:
                 ret, frame = self.master.cap.read()
                 if ret:
@@ -72,4 +73,6 @@ class PreviewsPage:
             time.sleep(0.05)
 
     def go_photo(self, e):
+        self.run_loop = False
+        self.update_thread.join()
         self.master.user_choise()

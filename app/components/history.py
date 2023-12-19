@@ -110,10 +110,29 @@ class HistoryPage:
         self.page.dialog.open = False
         self.page.update()
 
+    def get_unique_target_directory(self, mount_point, name_dir):
+        target_directory = os.path.join(mount_point, name_dir)
+        counter = 1
+        while os.path.exists(target_directory):
+            target_directory = os.path.join(mount_point, f"{name_dir}_{counter}")
+            counter += 1
+        return target_directory
+
+    def show_banner(self, message):
+        self.page.dialog = ft.AlertDialog(title=ft.Text(message), on_dismiss=self.close_banner)
+        self.page.dialog.open = True
+        self.page.update()
+
+    def update_banner(self, message):
+        if self.page.dialog:
+            self.page.dialog.title = ft.Text(message)
+            self.page.update()
+
     def copy_to_all_usb_drives(self, e, session_id):
         self.master.cur.execute("SELECT * FROM session WHERE id = ?", (session_id,))
-        sesion = self.master.cur.fetchone()
-        source_directory, name_dir = sesion[3] + "/photo_templates", sesion[3].split("/")[-1]
+        session = self.master.cur.fetchone()
+        source_directory = session[3] + "/photo_templates"
+        total_files = sum([len(files) for r, d, files in os.walk(source_directory)])
 
         usb_drives = [
             (partition.device, partition.mountpoint)
@@ -127,24 +146,19 @@ class HistoryPage:
 
         for usb_drive, mount_point in usb_drives:
             try:
-                target_directory = self.get_unique_target_directory(mount_point, name_dir)
-                shutil.copytree(source_directory, target_directory)
-                self.show_banner(f"Cодержимое скопировано на {usb_drive} в {target_directory}")
-                self.page.update()
+                target_directory = self.get_unique_target_directory(mount_point, session[3].split("/")[-1])
+                copied_files = 0
+                self.show_banner("Началось копирование")
+                for root, dirs, files in os.walk(source_directory):
+                    for file in files:
+                        source_file = os.path.join(root, file)
+                        relative_path = os.path.relpath(source_file, source_directory)
+                        destination_file = os.path.join(target_directory, relative_path)
+                        os.makedirs(os.path.dirname(destination_file), exist_ok=True)
+                        shutil.copy2(source_file, destination_file)
+                        copied_files += 1
+                        percent = (copied_files / total_files) * 100
+                        self.update_banner(f"Копирование: {percent:.2f}% завершено на {usb_drive}")
+                self.show_banner(f"Содержимое скопировано на {usb_drive} в {target_directory}")
             except Exception as ex:
                 pass
-
-    def get_unique_target_directory(self, mount_point, name_dir):
-        target_directory = os.path.join(mount_point, name_dir)
-        counter = 1
-        while os.path.exists(target_directory):
-            target_directory = os.path.join(mount_point, f"{name_dir}_{counter}")
-            counter += 1
-        return target_directory
-
-    def show_banner(self, message):
-        self.page.dialog = ft.AlertDialog(
-            title=ft.Text(message), on_dismiss=self.close_banner
-        )
-        self.page.dialog.open = True
-        self.page.update()
