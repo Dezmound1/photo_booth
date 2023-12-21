@@ -80,7 +80,6 @@ class TemplateView:
 
     def save_setting(self, e):
         with open(self.settings_path, "w") as json_file:
-            # Используете метод dump для записи данных в файл
             json.dump(self.setting_template, json_file)
 
         self.back(1)
