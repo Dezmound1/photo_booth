@@ -37,7 +37,7 @@ class TemplateView:
                 [i["shoot"] for i in self.setting_template["Photos"]]
             )
 
-        self.list_img = ["/mnt/my_vfat_partition/templates/test_img/0.png"] * self.limit_img
+        self.list_img = ["./templates/test_img/0.png"] * self.limit_img
 
         self.row_preset = ft.Image(
             src_base64="",
@@ -255,6 +255,8 @@ class TemplateView:
 
             background.paste(overlay, (x, y), overlay)
 
+        img_bg = Image.open(self.path_img)
+        background.paste(img_bg, (0, 0), img_bg)
         scaled_background = background.resize(
             (
                 int(int(self.setting_template["Width"]) / 3),
@@ -263,6 +265,7 @@ class TemplateView:
         )
 
         buffered = BytesIO()
+        
         scaled_background.save(buffered, format="PNG")
         base64_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
 

@@ -190,6 +190,9 @@ class UserChoise:
         # Сохраняем обработанное изображение
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
+        
+        img_bg = Image.open(template_path)
+        background.paste(img_bg, (0, 0), img_bg)
         background.save(output_path, format="PNG")
 
         return output_path

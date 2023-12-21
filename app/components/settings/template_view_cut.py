@@ -51,7 +51,7 @@ class TemplateViewCut:
         self.settings.controls.append(
             ft.Row(
                 [
-                    MainButton("Просмотреть", self.print_img),
+                    MainButton("Распечатать", self.print_img),
                     MainButton("Сохранить", self.save_setting),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,

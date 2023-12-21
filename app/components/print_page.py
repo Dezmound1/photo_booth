@@ -114,6 +114,7 @@ class PrintPage:
             self.page.update()
 
     def do_nothing(self, e):
+        self.done_button.controls[0].disabled=True
         img = Image.open(self.path_img)
         width, height = img.size
         

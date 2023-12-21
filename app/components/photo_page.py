@@ -371,6 +371,8 @@ class PhotoPage:
         # Сохранение итогового изображения
         base_path = f"{self.dir_photo}/photo_templates/"
         output_template = f"{self.get_max_dir_path(base_path)}/{self.name_template}_{self.count_files_in_folder(self.get_max_dir_path(base_path))}.png"
+        img_bg = Image.open(background_path)
+        background.paste(img_bg, (0, 0), img_bg)
         background.save(output_template, format="PNG")
         return output_template
     

@@ -5,7 +5,7 @@ import psutil
 import os
 from time import sleep
 
-from components.buttons import MainButton, MainText, BackButton
+from components.buttons import MainButton, MainText, BackButton, RedButton
 from components.photo_history import PhotoHistory
 
 
@@ -73,7 +73,7 @@ class HistoryPage:
                             ),
                             ft.ElevatedButton(
                                 text="Удалить",
-                                on_click=lambda e: self.del_session(e, session[0]),
+                                on_click=lambda e: self.alert(e, session[0]),
                                 height=40,
                                 width=150,
                             ),
@@ -83,6 +83,26 @@ class HistoryPage:
                 ]
             )
         )
+
+    def alert(self, e, session_id):
+        self.dlg_modal = ft.AlertDialog(
+            modal=True,
+            title=MainText("Подтвердите"),
+            content=MainText("Хотите удалить сессию?"),
+            actions=[
+                MainButton("Да", on_click=lambda e: self.del_session(e, session_id)),
+                RedButton("Нет", on_click=self.close_dlg),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            on_dismiss=lambda e: print("Modal dialog dismissed!"),
+        )
+        self.page.dialog = self.dlg_modal
+        self.dlg_modal.open = True
+        self.page.update()
+
+    def close_dlg(self, e):
+        self.dlg_modal.open = False
+        self.page.update()
 
     def back_main(self, e):
         self.page.scroll = "None"
@@ -94,6 +114,8 @@ class HistoryPage:
         self.master.cur.execute("DELETE FROM session WHERE id = ?", (session_id,))
         os.system(f"rm -fr {path}")
         self.master.conn.commit()
+        self.dlg_modal.open = False
+        self.page.update()
         self.master.new_win(HistoryPage)
 
     def photo_session(self, e, session_id):
