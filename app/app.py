@@ -15,13 +15,13 @@ from components.page_preview import PreviewsPage
 
 
 def get_total_active_jobs():
-    conn = cups.Connection()
-    printers = conn.getPrinters()
+    # conn = cups.Connection()
+    # printers = conn.getPrinters()
 
     total_jobs = 0
 
-    for printer_name in printers:
-        total_jobs += len(conn.getJobs().keys())
+    # for printer_name in printers:
+    #     total_jobs += len(conn.getJobs().keys())
 
     return total_jobs
 

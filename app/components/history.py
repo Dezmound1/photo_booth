@@ -24,11 +24,7 @@ class HistoryPage:
 
         self.button_back = BackButton("Назад", on_click=self.back_main)
 
-        self.lv = ft.Column(
-            scroll=ft.ScrollMode.ALWAYS,
-            height=500
-        )
-        
+        self.lv = ft.Column(scroll=ft.ScrollMode.ALWAYS, height=500)
 
         self.page.add(self.button_back)
         self.page.add(
@@ -81,9 +77,7 @@ class HistoryPage:
                             ),
                             ft.ElevatedButton(
                                 text="Удалить",
-                                on_click=lambda e: self.del_session(
-                                    e, session[0]
-                                ),
+                                on_click=lambda e: self.alert(e, session[0]),
                                 height=40,
                                 width=150,
                             ),
@@ -98,11 +92,35 @@ class HistoryPage:
         self.page.scroll = "None"
         self.master.back_main_page()
 
+    def alert(self, e, session_id):
+        self.dlg_modal = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Подтвердите"),
+            content=ft.Text("Хотите удалить сессию?"),
+            actions=[
+                ft.TextButton(
+                    "Да", on_click=lambda e: self.del_session(e, session_id)
+                ),
+                ft.TextButton("Нет", on_click=self.close_dlg),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            on_dismiss=lambda e: print("Modal dialog dismissed!"),
+        )
+        self.page.dialog = self.dlg_modal
+        self.dlg_modal.open = True
+        self.page.update()
+
+    def close_dlg(self, e):
+        self.dlg_modal.open = False
+        self.page.update()
+
     def del_session(self, e, session_id):
         self.master.cur.execute(
             "DELETE FROM session WHERE id = ?", (session_id,)
         )
         self.master.conn.commit()
+        self.dlg_modal.open = False
+        self.page.update()
         self.master.new_win(HistoryPage)
 
     def photo_session(self, e, session_id):
