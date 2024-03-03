@@ -28,28 +28,34 @@ class PreviewsPage:
             border_radius=ft.border_radius.all(10),
         )
         self.page.add(
-            ft.Row(
-                [
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    self.canvas,
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                            ),
-                            ft.Row(
-                                [
-                                    self.button,
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.START,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=ft.Column(
+                    [
+                        ft.Column(
+                            [
+                                ft.Row(
+                                    [
+                                        self.canvas,
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                ),
+                                ft.Row(
+                                    [
+                                        self.button,
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.START,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                alignment=ft.alignment.center,
             )
         )
 

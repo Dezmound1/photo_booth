@@ -5,6 +5,7 @@ from PIL import Image
 import json
 
 from components.buttons import MainButton, RedButton
+from components.const import PathEnum
 
 
 
@@ -14,7 +15,7 @@ class PrintPage:
         self.master = master
         self.path_img = path_img[0]
         self.is_history = path_img[1]
-        path = "/mnt/my_vfat_partition/templates/" + self.master.session[4] + "/" + path_img[0].split("/")[-1].split(".")[0].split("_")[0] + ".json"
+        path = f"{PathEnum.mnt_path.value}/" + self.master.session[4] + "/" + path_img[0].split("/")[-1].split(".")[0].split("_")[0] + ".json"
         self.setting = json.load(open(path))
         self.cut = self.setting.get("ComboPrint")
         self.name_category = self.master.session[4]

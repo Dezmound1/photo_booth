@@ -3,6 +3,7 @@ from PIL import Image
 
 from components.buttons import RedButton
 from components.photo_page import PhotoPage
+from components.const import PathEnum
 
 import os
 import time
@@ -22,7 +23,7 @@ class UserChoise:
         self.index = 1
         self.list_template = [
             name.split(".")[0]
-            for name in os.listdir(f"/mnt/my_vfat_partition/templates/{self.name_category}")
+            for name in os.listdir(f"{PathEnum.mnt_path.value}/{self.name_category}")
             if name.split(".")[1] == "png"
         ]
         self.count_open = 1
@@ -43,27 +44,38 @@ class UserChoise:
             ],
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         )
-        self.page.add(
-            ft.Row(
-                [
-                    ft.Text(
-                        "Выберите шаблон",
-                        style=ft.TextThemeStyle.DISPLAY_MEDIUM,
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            )
-        )
-
-        self.page.add(self.content)
 
         for i in self.list_template:
             self.creact_container(i)
             self.page.update()
 
-        self.page.add(self.buttom_event)
+        content = ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Text(
+                            "Выберите шаблон",
+                            style=ft.TextThemeStyle.DISPLAY_MEDIUM,
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                self.content,
+                self.buttom_event,
+                ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER),
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+
         self.page.add(
-            ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
+            )
         )
 
         self.mutex = threading.Lock()
@@ -121,6 +133,7 @@ class UserChoise:
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=10),
                 ),
+                bgcolor = ft.colors.with_opacity(0.0, "#5F60FF")
             )
         )
 
@@ -158,14 +171,14 @@ class UserChoise:
             return output_path
 
         # Загружаем настройки шаблона
-        setting_template_path = f"/mnt/my_vfat_partition/templates/{self.name_category}/{img_name}.json"
+        setting_template_path = f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.json"
         if not os.path.exists(setting_template_path):
             raise FileNotFoundError(f"Setting template file not found: {setting_template_path}")
 
         setting_template = json.load(open(setting_template_path))
 
         # Загружаем фоновое изображение
-        template_path = f"/mnt/my_vfat_partition/templates/{self.name_category}/{img_name}.png"
+        template_path = f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.png"
         if not os.path.exists(template_path):
             raise FileNotFoundError(f"Template file not found: {template_path}")
 
@@ -190,7 +203,7 @@ class UserChoise:
         # Сохраняем обработанное изображение
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        
+
         img_bg = Image.open(template_path)
         background.paste(img_bg, (0, 0), img_bg)
         background.save(output_path, format="PNG")

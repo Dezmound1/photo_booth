@@ -21,32 +21,41 @@ class Main:
         settings = MainButton("Настройки", self.settings)
 
         shut_down = RedButton("Выключить", self.shut_down)
+
+        content = ft.Column(
+            [
+                ft.Row(
+                    [new],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    visible=True,
+                ),
+                ft.Row(
+                    [history],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    visible=True,
+                ),
+                ft.Row(
+                    [settings],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    visible=True,
+                ),
+                ft.Row(
+                    [shut_down],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    visible=True,
+                ),
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+
         self.page.add(
-            ft.Column(
-                [
-                    ft.Row(
-                        [new],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        visible=True,
-                    ),
-                    ft.Row(
-                        [history],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        visible=True,
-                    ),
-                    ft.Row(
-                        [settings],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        visible=True,
-                    ),
-                    ft.Row(
-                        [shut_down],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        visible=True,
-                    ),
-                ],
-                spacing=20,
-                alignment=ft.MainAxisAlignment.CENTER,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
             )
         )
 

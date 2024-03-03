@@ -4,7 +4,8 @@ import os
 from datetime import datetime
 import uuid
 
-from components.buttons import BackButton, MainText
+from components.buttons import RedButton, MainText
+from components.const import PathEnum
 
 
 class SessionList:
@@ -13,25 +14,41 @@ class SessionList:
         self.page = page
         self.name = name
 
-        self.namelist = os.listdir("/mnt/my_vfat_partition/templates")
+        self.namelist = os.listdir(PathEnum.mnt_path.value)
         try:
             self.namelist.remove("test_img")
         except:
             pass
 
-        self.button_back = BackButton("Назад", self.back_main)
+        self.button_back = RedButton("Назад", self.back_main)
+
+        self.row = ft.GridView(expand=True, runs_count=4)
+
+        content = ft.Column(
+            [
+                ft.Row(
+                    [self.button_back],
+                    alignment=ft.MainAxisAlignment.START,
+                    visible=True,
+                ),
+                self.row,
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        for i in self.namelist:
+            self.row.controls.append(self.creat_buttom(i))
+
         self.page.add(
-            ft.Row(
-                [self.button_back],
-                alignment=ft.MainAxisAlignment.START,
-                visible=True,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
             )
         )
 
-        self.row = ft.GridView(expand=True, runs_count=4)
-        self.page.add(self.row)
-        for i in self.namelist:
-            self.row.controls.append(self.creat_buttom(i))
         self.page.update()
 
     def creat_buttom(self, name):
@@ -44,20 +61,12 @@ class SessionList:
             width=200,
             height=200,
             border_radius=10,
-            ink=True,
             on_click=lambda e: self.userlist(e, name),
         )
 
     def userlist(self, e, name):
         date = str(datetime.now().date())
-        name_dir = (
-            "./photo_session/"
-            + self.name
-            + "_"
-            + str(uuid.uuid1()).split("-")[-1]
-            + "_"
-            + date
-        )
+        name_dir = "./photo_session/" + self.name + "_" + str(uuid.uuid1()).split("-")[-1] + "_" + date
         os.makedirs(name_dir)
         os.makedirs(name_dir + "/photo")
         os.makedirs(name_dir + "/photo_templates")
@@ -69,9 +78,7 @@ class SessionList:
         )
         last_row_id = self.master.cur.lastrowid
         self.master.conn.commit()
-        self.master.cur.execute(
-            "SELECT * FROM session WHERE id = ?", (last_row_id,)
-        )
+        self.master.cur.execute("SELECT * FROM session WHERE id = ?", (last_row_id,))
 
         self.master.session = self.master.cur.fetchone()
         self.master.go_camera_main()

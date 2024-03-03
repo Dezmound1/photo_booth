@@ -21,6 +21,7 @@ from components.page_preview import PreviewsPage
 class Pages:
     def __init__(self, page):
         self.page = page
+        self.page.bgcolor = ft.colors.with_opacity(1, "#5F60FF")
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.views = None
         self.conn = sqlite3.connect("./base.db", check_same_thread=False)
@@ -52,7 +53,7 @@ class Pages:
         self.new_win(Main)
 
     def connect_camera(self, camera_num):
-        timeout = 10
+        timeout = 1
         start_time = time.time()
         while True:
             self.cap = cv2.VideoCapture(camera_num)

@@ -15,15 +15,23 @@ class Settings:
         templates_cut_test_button = MainButton("Тест разрезов", self.setting_cut_template)
         back_button = RedButton("Назад", self.back_main)
 
+        content = ft.Column(
+            [
+                ft.Row([out_system], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([templates_test_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([templates_cut_test_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([back_button], alignment=ft.MainAxisAlignment.CENTER),
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
         self.page.add(
-            ft.Column(
-                [
-                    ft.Row([out_system], alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Row([templates_test_button], alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Row([templates_cut_test_button], alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Row([back_button], alignment=ft.MainAxisAlignment.CENTER),
-                ],
-                spacing=20,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
             )
         )
 
@@ -32,7 +40,7 @@ class Settings:
 
     def setting_tenplate(self, e):
         self.master.new_win(TemplateTest)
-    
+
     def setting_cut_template(self, e):
         self.master.new_win(TemplateCutTest)
 

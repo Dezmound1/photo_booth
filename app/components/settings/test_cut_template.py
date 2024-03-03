@@ -4,6 +4,7 @@ import os
 
 from components.settings.template_view_cut import TemplateViewCut
 from components.buttons import RedButton
+from components.const import PathEnum
 
 
 class TemplateCutTest:
@@ -19,7 +20,7 @@ class TemplateCutTest:
             [
                 ft.Row([self.cards], width=1200),
             ],
-            alignment=ft.MainAxisAlignment.CENTER
+            alignment=ft.MainAxisAlignment.CENTER,
         )
         self.buttom_event = ft.Row(
             [
@@ -31,37 +32,53 @@ class TemplateCutTest:
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         )
         self.back_btn = RedButton("Назад", self.back)
-        self.page.add(self.back_btn)
-        self.page.add(
-            ft.Row(
-                [
-                    ft.Text(
-                        "Выберите шаблон",
-                        style=ft.TextThemeStyle.DISPLAY_MEDIUM,
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            )
-        )
-        self.page.add(self.content)
+        
+        
         for i in self.list_template:
             self.creact_container(i)
             self.page.update()
+            
+        content = ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Text(
+                            "Выберите шаблон",
+                            style=ft.TextThemeStyle.DISPLAY_MEDIUM,
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                self.content,
+                self.buttom_event,
+                ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER),
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
         
-        self.page.add(self.buttom_event)
+        self.page.add(
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
+            )
+        )
         
         self.page.update()
 
     def get_file_paths(self):
         file_paths = []
 
-        for root, dirs, files in os.walk("/mnt/my_vfat_partition/templates"):
+        for root, dirs, files in os.walk(PathEnum.mnt_path.value):
             for file in files:
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
 
         file_paths = [
-            i for i in file_paths if not i.startswith("/mnt/my_vfat_partition/templates/test_img")
+            i for i in file_paths if not i.startswith(f"{PathEnum.mnt_path.value}/test_img")
         ]
         file_paths = [i for i in file_paths if not i.endswith(".json")]
 
@@ -77,7 +94,6 @@ class TemplateCutTest:
                 width=320,
                 height=622,
                 border_radius=15,
-                ink=True,
                 on_click=lambda e: self.click_photo(e, path),
                 image_src=path,
                 key=f"{i}"

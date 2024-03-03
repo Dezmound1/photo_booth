@@ -23,18 +23,28 @@ class HistoryPage:
         self.title = ft.Text("История сессий", size=30)
         self.session_comment = MainText("Краткое описание")
 
-        self.button_back = BackButton("Назад", on_click=self.back_main)
+        self.button_back = RedButton("Назад", on_click=self.back_main)
 
         self.lv = ft.Column(scroll=ft.ScrollMode.ALWAYS, height=500)
-
-        self.page.add(self.button_back)
+        content = ft.Column(
+            controls=[
+                self.button_back,
+                ft.Row(
+                    [self.title],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                self.lv
+            ]
+        )
         self.page.add(
-            ft.Row(
-                [self.title],
-                alignment=ft.MainAxisAlignment.CENTER,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
             )
         )
-        self.page.add(self.lv)
         for i in self.list_session:
             self.creat_row(i)
             self.page.update()
@@ -58,24 +68,76 @@ class HistoryPage:
                                 on_click=lambda e: self.copy_to_all_usb_drives(e, session[0]),
                                 height=40,
                                 width=150,
+                                bgcolor=ft.colors.with_opacity(1, "#FF544D"),
+                                style=ft.ButtonStyle(
+                                    side={
+                                        ft.MaterialState.DEFAULT: ft.BorderSide(
+                                            1,
+                                            ft.colors.with_opacity(1, "#FF544D"),
+                                        ),
+                                    },
+                                    shape={
+                                        ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                                    },
+                                ),
+                                color=ft.colors.WHITE
                             ),
                             ft.ElevatedButton(
                                 text="Продолжить",
                                 on_click=lambda e: self.resume_session(e, session[0]),
                                 height=40,
                                 width=150,
+                                bgcolor=ft.colors.with_opacity(1, "#FF544D"),
+                                style=ft.ButtonStyle(
+                                    side={
+                                        ft.MaterialState.DEFAULT: ft.BorderSide(
+                                            1,
+                                            ft.colors.with_opacity(1, "#FF544D"),
+                                        ),
+                                    },
+                                    shape={
+                                        ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                                    },
+                                ),
+                                color=ft.colors.WHITE
                             ),
                             ft.ElevatedButton(
                                 text="Фотографии",
                                 on_click=lambda e: self.photo_session(e, session[0]),
                                 height=40,
                                 width=150,
+                                bgcolor=ft.colors.with_opacity(1, "#FF544D"),
+                                style=ft.ButtonStyle(
+                                    side={
+                                        ft.MaterialState.DEFAULT: ft.BorderSide(
+                                            1,
+                                            ft.colors.with_opacity(1, "#FF544D"),
+                                        ),
+                                    },
+                                    shape={
+                                        ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                                    },
+                                ),
+                                color=ft.colors.WHITE
                             ),
                             ft.ElevatedButton(
                                 text="Удалить",
                                 on_click=lambda e: self.alert(e, session[0]),
                                 height=40,
                                 width=150,
+                                bgcolor=ft.colors.with_opacity(1, "#FF544D"),
+                                style=ft.ButtonStyle(
+                                    side={
+                                        ft.MaterialState.DEFAULT: ft.BorderSide(
+                                            1,
+                                            ft.colors.with_opacity(1, "#FF544D"),
+                                        ),
+                                    },
+                                    shape={
+                                        ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                                    },
+                                ),
+                                color=ft.colors.WHITE
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
