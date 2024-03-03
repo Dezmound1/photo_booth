@@ -19,7 +19,7 @@ class TemplateViewCut:
         self.settings_path = self.path_img.replace(".png", ".json")
         with open(self.settings_path, "r") as file:
             self.setting_template = json.load(file)
-        
+
         self.cut = self.setting_template.get("ComboPrint")
 
         self.replace = None
@@ -59,7 +59,23 @@ class TemplateViewCut:
                 height=80,
             )
         )
-        self.page.add(ft.Row([self.row_preset, self.settings]))
+        content = ft.Row(
+            [
+                self.row_preset,
+                self.settings,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
+        self.page.add(
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
+            )
+        )
         self.page.update()
 
     def save_setting(self, e):
@@ -130,9 +146,13 @@ class TemplateViewCut:
             int(self.settings.controls[index].controls[0].controls[1].controls[num].value) - 1
         )
         if num == 1:
-            self.setting_template["cut_y"] = int(self.settings.controls[index].controls[0].controls[1].controls[num].value)
+            self.setting_template["cut_y"] = int(
+                self.settings.controls[index].controls[0].controls[1].controls[num].value
+            )
         else:
-            self.setting_template["cut_x"] = int(self.settings.controls[index].controls[0].controls[1].controls[num].value)
+            self.setting_template["cut_x"] = int(
+                self.settings.controls[index].controls[0].controls[1].controls[num].value
+            )
 
         self.setting_template["Photos"][index]
         self.page.update()
@@ -142,54 +162,57 @@ class TemplateViewCut:
             int(self.settings.controls[index].controls[0].controls[1].controls[num].value) + 1
         )
         if num == 1:
-            self.setting_template["cut_y"] = int(self.settings.controls[index].controls[0].controls[1].controls[num].value)
+            self.setting_template["cut_y"] = int(
+                self.settings.controls[index].controls[0].controls[1].controls[num].value
+            )
         else:
-            self.setting_template["cut_x"] = int(self.settings.controls[index].controls[0].controls[1].controls[num].value)
+            self.setting_template["cut_x"] = int(
+                self.settings.controls[index].controls[0].controls[1].controls[num].value
+            )
 
         self.page.update()
-        
+
     def print_img(self, e):
         img = Image.open(self.path_img)
         width, height = img.size
-        
+
         cut_y = 0
         if self.setting_template.get("cut_y"):
             cut_y = self.setting_template.get("cut_y")
-            
+
         cut_x = 0
         if self.setting_template.get("cut_x"):
             cut_x = self.setting_template.get("cut_x")
-        
+
         new_width = width + abs(cut_x)
         new_height = height + abs(cut_y)
         new_img = Image.new("RGBA", (new_width, new_height), (0, 0, 0, 0))
-        
+
         x_cut = 0
         if cut_x > -1:
             x_cut = cut_x
-        
+
         y_cut = 0
         if cut_y > -1:
             y_cut = cut_y
-            
+
         new_img.paste(img, (x_cut, y_cut))
-        
+
         new_img.save("./test.png")
 
         img.close()
         new_img.close()
-        
+
         filename = "./test.png"
         if self.cut:
             setting = {"copies": "1"}
         else:
-            setting = {"copies": "1", 'media': 'custom_104.99x162.56mm_104.99x162.56mm'}
-        
+            setting = {"copies": "1", "media": "custom_104.99x162.56mm_104.99x162.56mm"}
+
         conn = cups.Connection()
         printers = conn.getPrinters()
         for printer in printers:
             conn.printFile(printer, filename, "PhotoBox", setting)
-        
 
     def overlay_images(self, e) -> str:
         background = Image.open(self.path_img)

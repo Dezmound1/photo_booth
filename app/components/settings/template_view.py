@@ -27,7 +27,6 @@ class TemplateView:
             width=150,
             height=40,
         )
-        self.page.add(self.container)
 
         self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
 
@@ -66,7 +65,25 @@ class TemplateView:
                 height=80,
             )
         )
-        self.page.add(ft.Row([self.row_preset, self.settings]))
+
+        content = ft.Column(
+            [
+                self.container,
+                ft.Row([self.row_preset, self.settings]),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
+        self.page.add(
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
+            )
+        )
+
         self.page.update()
 
     def save_setting(self, e):
@@ -210,7 +227,7 @@ class TemplateView:
                 self.setting_template["Photos"][index]["w"] -= 1
             else:
                 self.setting_template["Photos"][index]["h"] -= 1
-        
+
         self.setting_template["Photos"][index]
         self.page.update()
 
@@ -265,7 +282,7 @@ class TemplateView:
         )
 
         buffered = BytesIO()
-        
+
         scaled_background.save(buffered, format="PNG")
         base64_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
 

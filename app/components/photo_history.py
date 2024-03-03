@@ -4,6 +4,7 @@ import flet as ft
 from components.buttons import BackButton, MainText, RedButton, MainButton
 from components.print_page import PrintPage
 
+
 class PhotoHistory:
     def __init__(self, page, master):
         self.master = master
@@ -15,19 +16,10 @@ class PhotoHistory:
         self.dir_activite = "dir_0"
         self.list_template = os.listdir(f"{self.dir_photo}/photo_templates/{self.dir_activite}")
         self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
-        
+
         self.count_open = 1
-        self.page.add(
-            ft.Row(
-                [
-                    self.creat_button_dir(i)
-                    for i in self.list_template_dir
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            )
-        )
         self.cards = ft.Row(expand=1, width=1200, scroll="AUTO")
-        self.content = ft.Row(
+        self.cards_row = ft.Row(
             [
                 ft.Row([self.cards], width=1200),
             ],
@@ -42,20 +34,41 @@ class PhotoHistory:
             ],
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         )
-        self.page.add(self.content)
-        
-        self.creact_slider(self.list_template)
-            
-        self.page.update()
-        self.page.add(self.buttom_event)
-        self.page.add(
-            ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))],alignment=ft.MainAxisAlignment.CENTER),
+
+        content = ft.Column(
+            [
+                ft.Row(
+                    [self.creat_button_dir(i) for i in self.list_template_dir],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                self.cards_row,
+                self.buttom_event,
+                ft.Row(
+                    controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
+
+        self.creact_slider(self.list_template)
         self.page.update()
-    
+
+        self.page.add(
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
+            )
+        )
+
+        self.page.update()
+
     def creat_button_dir(self, name):
         return MainButton(name, lambda e: self.update_slider(name))
-    
+
     def update_slider(self, name_dir):
         self.index = 1
         self.dir_activite = name_dir
@@ -63,15 +76,15 @@ class PhotoHistory:
         self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
         self.count_open = 1
         self.creact_slider(self.list_template)
-        
+
     def creact_slider(self, list_photo_name):
         self.cards.controls = []
         self.page.update()
-        
+
         for i in list_photo_name:
             self.creact_container(i)
             self.page.update()
-    
+
     def creact_container(self, name):
         i = self.index
         self.cards.controls.append(

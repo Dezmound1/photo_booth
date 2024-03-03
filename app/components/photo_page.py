@@ -26,7 +26,9 @@ class PhotoPage:
         self.run_loop = True
 
         self.name_category = self.master.session[4]
-        self.setting_template = json.load(open(f"{PathEnum.mnt_path.value}/{self.name_category}/{self.name_template}.json"))
+        self.setting_template = json.load(
+            open(f"{PathEnum.mnt_path.value}/{self.name_category}/{self.name_template}.json")
+        )
         self.replace = None
         self.size_y = self.setting_template["Photos"][0]["x"]
         self.size_x = self.setting_template["Photos"][0]["y"]
@@ -67,34 +69,49 @@ class PhotoPage:
             ],
             horizontal_alignment=ft.MainAxisAlignment.CENTER,
         )
+
+        content = ft.Row(
+            [
+                ft.Column(
+                    [
+                        self.colum,
+                    ],
+                    spacing=20,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                ft.Column(
+                    [
+                        ft.Stack(
+                            [self.canvas, self.timer_text],
+                        ),
+                        ft.Row(
+                            [
+                                self.button,
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                ft.Column(
+                    [
+                        ft.Column(controls=[BackButton("Назад", lambda e: self.back(e, self.name_category))]),
+                    ],
+                    spacing=20,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+        )
+
         self.page.add(
-            ft.Row(
-                [
-                    ft.Column(
-                        [
-                            self.colum,
-                        ]
-                    ),
-                    ft.Column(
-                        [
-                            ft.Stack([self.canvas, self.timer_text]),
-                            ft.Row(
-                                [
-                                    self.button,
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.START,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    ),
-                    ft.Column(
-                        [
-                            ft.Column(controls=[BackButton("Назад", lambda e: self.back(e, self.name_category))]),
-                        ]
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            ft.Container(
+                image_src="./img/bg.png",
+                image_fit=ft.ImageFit.COVER,
+                expand=True,
+                content=content,
+                alignment=ft.alignment.center,
             )
         )
 
@@ -301,7 +318,7 @@ class PhotoPage:
                         image_src=path_img,
                     ),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER
+                alignment=ft.MainAxisAlignment.CENTER,
             ),
             actions=[
                 MainButton("Мне нравиться !", on_click=lambda e: self.go_printer(e, path_img)),
@@ -315,14 +332,14 @@ class PhotoPage:
         self.page.dialog = self.dlg_modal
         self.dlg_modal.open = True
         self.page.update()
-    
+
     def go_printer(self, e, path):
         self.run_loop = False
         self.update_thread.join()
         self.close_dlg(e)
         self.master.new_win(PrintPage, (path, False))
-    
-    def close_dlg(self,e):
+
+    def close_dlg(self, e):
         self.dlg_modal.open = False
         self.page.update()
 
@@ -376,7 +393,7 @@ class PhotoPage:
         background.paste(img_bg, (0, 0), img_bg)
         background.save(output_template, format="PNG")
         return output_template
-    
+
     def get_max_dir_path(self, base_path):
         max_dir = None
         max_index = -1
@@ -403,7 +420,6 @@ class PhotoPage:
         else:
             # Return the path of the maximum directory
             return os.path.join(base_path, max_dir)
-        
 
     def start_timer(self, remaining_time):
         if remaining_time > 0:
