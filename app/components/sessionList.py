@@ -66,7 +66,14 @@ class SessionList:
 
     def userlist(self, e, name):
         date = str(datetime.now().date())
-        name_dir = "./photo_session/" + self.name + "_" + str(uuid.uuid1()).split("-")[-1] + "_" + date
+        name_dir = (
+            "./photo_session/"
+            + self.name
+            + "_"
+            + str(uuid.uuid1()).split("-")[-1]
+            + "_"
+            + date
+        )
         os.makedirs(name_dir)
         os.makedirs(name_dir + "/photo")
         os.makedirs(name_dir + "/photo_templates")
@@ -78,7 +85,9 @@ class SessionList:
         )
         last_row_id = self.master.cur.lastrowid
         self.master.conn.commit()
-        self.master.cur.execute("SELECT * FROM session WHERE id = ?", (last_row_id,))
+        self.master.cur.execute(
+            "SELECT * FROM session WHERE id = ?", (last_row_id,)
+        )
 
         self.master.session = self.master.cur.fetchone()
         self.master.go_camera_main()

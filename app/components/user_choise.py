@@ -23,7 +23,9 @@ class UserChoise:
         self.index = 1
         self.list_template = [
             name.split(".")[0]
-            for name in os.listdir(f"{PathEnum.mnt_path.value}/{self.name_category}")
+            for name in os.listdir(
+                f"{PathEnum.mnt_path.value}/{self.name_category}"
+            )
             if name.split(".")[1] == "png"
         ]
         self.count_open = 1
@@ -37,10 +39,26 @@ class UserChoise:
         )
         self.buttom_event = ft.Row(
             [
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_DOUBLE_ARROW_LEFT, on_click=self.mun_2),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_ARROW_LEFT, on_click=self.mun_1),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_ARROW_RIGHT, on_click=self.add_1),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_DOUBLE_ARROW_RIGHT, on_click=self.add_2),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_DOUBLE_ARROW_LEFT,
+                    on_click=self.mun_2,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_ARROW_LEFT,
+                    on_click=self.mun_1,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_ARROW_RIGHT,
+                    on_click=self.add_1,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_DOUBLE_ARROW_RIGHT,
+                    on_click=self.add_2,
+                ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         )
@@ -62,7 +80,10 @@ class UserChoise:
                 ),
                 self.content,
                 self.buttom_event,
-                ft.Row(controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row(
+                    controls=[RedButton("Назад", lambda e: self.back(e))],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -133,7 +154,7 @@ class UserChoise:
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=10),
                 ),
-                bgcolor = ft.colors.with_opacity(0.0, "#5F60FF")
+                bgcolor=ft.colors.with_opacity(0.0, "#5F60FF"),
             )
         )
 
@@ -155,8 +176,13 @@ class UserChoise:
         while not self.stop_thread:
             current_time = time.time()
             with self.mutex:
-                if current_time - self.last_activity_time > self.inactivity_timeout:
-                    self.back(None)  # Вызываем метод back, если прошло более 5 минут бездействия
+                if (
+                    current_time - self.last_activity_time
+                    > self.inactivity_timeout
+                ):
+                    self.back(
+                        None
+                    )  # Вызываем метод back, если прошло более 5 минут бездействия
             time.sleep(60)
 
     def stop_tracking_thread(self):
@@ -171,16 +197,24 @@ class UserChoise:
             return output_path
 
         # Загружаем настройки шаблона
-        setting_template_path = f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.json"
+        setting_template_path = (
+            f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.json"
+        )
         if not os.path.exists(setting_template_path):
-            raise FileNotFoundError(f"Setting template file not found: {setting_template_path}")
+            raise FileNotFoundError(
+                f"Setting template file not found: {setting_template_path}"
+            )
 
         setting_template = json.load(open(setting_template_path))
 
         # Загружаем фоновое изображение
-        template_path = f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.png"
+        template_path = (
+            f"{PathEnum.mnt_path.value}/{self.name_category}/{img_name}.png"
+        )
         if not os.path.exists(template_path):
-            raise FileNotFoundError(f"Template file not found: {template_path}")
+            raise FileNotFoundError(
+                f"Template file not found: {template_path}"
+            )
 
         background = Image.open(template_path)
 
@@ -188,7 +222,12 @@ class UserChoise:
         test_image_path = "./templates/test_img/0.png"
 
         for overlay_info in setting_template["Photos"]:
-            x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
+            x, y, w, h = (
+                overlay_info["x"],
+                overlay_info["y"],
+                overlay_info["w"],
+                overlay_info["h"],
+            )
 
             # Загружаем и обрабатываем изображение для наложения
             overlay = Image.open(test_image_path)
@@ -210,7 +249,9 @@ class UserChoise:
 
         return output_path
 
-    def resize_and_crop(self, image, target_aspect_ratio, new_width, new_height):
+    def resize_and_crop(
+        self, image, target_aspect_ratio, new_width, new_height
+    ):
         # Вычисляем соотношение сторон исходного изображения
         current_aspect_ratio = image.width / image.height
 
@@ -218,11 +259,15 @@ class UserChoise:
         if current_aspect_ratio > target_aspect_ratio:
             # Масштабируем по высоте, обрезаем по ширине
             scaled_height = int(new_width / target_aspect_ratio)
-            image = image.resize((new_width, scaled_height), Image.Resampling.LANCZOS)
+            image = image.resize(
+                (new_width, scaled_height), Image.Resampling.LANCZOS
+            )
         else:
             # Масштабируем по ширине, обрезаем по высоте
             scaled_width = int(new_height * target_aspect_ratio)
-            image = image.resize((scaled_width, new_height), Image.Resampling.LANCZOS)
+            image = image.resize(
+                (scaled_width, new_height), Image.Resampling.LANCZOS
+            )
 
         # Вычисляем координаты для обрезки
         left = (image.width - new_width) // 2

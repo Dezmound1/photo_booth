@@ -15,7 +15,9 @@ class Main:
         self.master = master
         self.page = page
 
-        self.new_session = Alert(event_next=self.list_session, event_close=self.close_dlg)
+        self.new_session = Alert(
+            event_next=self.list_session, event_close=self.close_dlg
+        )
         new = MainButton("Новая", self.open_dlg_modal)
         history = MainButton("История", self.history)
         settings = MainButton("Настройки", self.settings)

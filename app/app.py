@@ -27,13 +27,13 @@ class Pages:
         self.conn = sqlite3.connect("./base.db", check_same_thread=False)
         self.cur = self.conn.cursor()
 
-        self.command = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video3"
+        self.command = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video2"
         self.process_camera = None
         self.rerun_process_camera()
 
         self.cap = None
-        self.connect_camera(3)
-        
+        self.connect_camera(2)
+
         self.page.window_full_screen = True
 
         self.session = None
@@ -53,7 +53,7 @@ class Pages:
         self.new_win(Main)
 
     def connect_camera(self, camera_num):
-        timeout = 1
+        timeout = 10
         start_time = time.time()
         while True:
             self.cap = cv2.VideoCapture(camera_num)
@@ -117,7 +117,7 @@ class Pages:
         self.kill_process_camera()
         self.page.clean()
         self.views = TemplateTest(self.page, self)
-    
+
     def back_settings_template_cut_all(self):
         self.kill_process_camera()
         self.page.clean()
@@ -185,7 +185,10 @@ class Pages:
         self,
     ):
         self.process_camera = subprocess.Popen(
-            self.command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            self.command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
 
 

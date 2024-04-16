@@ -12,7 +12,7 @@ from components.buttons import MainButton
 class TemplateView:
     def __init__(self, page, master, path_img):
         self.page = page
-        self.page.scroll = "ALWAYS"
+        # self.page.scroll = "ALWAYS"
         self.master = master
         self.path_img = path_img
         self.settings_path = self.path_img.replace(".png", ".json")
@@ -20,21 +20,29 @@ class TemplateView:
             self.setting_template = json.load(file)
 
         self.replace = None
-        self.back_btn = BackButton("Назад", on_click=self.back)
+        self.back_btn = MainButton("Назад", on_click=self.back)
+
         self.container = ft.Container(
             content=self.back_btn,
             alignment=ft.alignment.top_left,
             width=150,
             height=40,
         )
+        # self.page.add(self.container)
 
-        self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
+        self.limit_img = len(
+            [i["shoot"] for i in self.setting_template["Photos"]]
+        )
 
-        if self.limit_img != max([i["shoot"] for i in self.setting_template["Photos"]]):
-            self.limit_img = max([i["shoot"] for i in self.setting_template["Photos"]])
-            self.replace = len([i["shoot"] for i in self.setting_template["Photos"]]) / max(
+        if self.limit_img != max(
+            [i["shoot"] for i in self.setting_template["Photos"]]
+        ):
+            self.limit_img = max(
                 [i["shoot"] for i in self.setting_template["Photos"]]
             )
+            self.replace = len(
+                [i["shoot"] for i in self.setting_template["Photos"]]
+            ) / max([i["shoot"] for i in self.setting_template["Photos"]])
 
         self.list_img = ["./templates/test_img/0.png"] * self.limit_img
 
@@ -53,7 +61,10 @@ class TemplateView:
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
-        self.settings.controls = [self.creact_setting(i) for i in range(len(self.setting_template["Photos"]))]
+        self.settings.controls = [
+            self.creact_setting(i)
+            for i in range(len(self.setting_template["Photos"]))
+        ]
         self.settings.controls.append(
             ft.Row(
                 [
@@ -66,24 +77,21 @@ class TemplateView:
             )
         )
 
-        content = ft.Column(
-            [
-                self.container,
-                ft.Row([self.row_preset, self.settings]),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        )
-        self.page.add(
-            ft.Container(
-                image_src="./img/bg.png",
-                image_fit=ft.ImageFit.COVER,
-                expand=True,
-                content=content,
-                alignment=ft.alignment.center,
-            )
+        content = ft.Container(
+            content=ft.Column(
+                controls=[
+                    self.container,
+                    ft.Row([self.row_preset, self.settings]),
+                ]
+            ),
+            image_src="./img/bg.png",
+            image_fit=ft.ImageFit.COVER,
+            alignment=ft.alignment.center,
+            expand=True,
         )
 
+        self.page.add(content)
+        
         self.page.update()
 
     def save_setting(self, e):
@@ -116,7 +124,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_DROP_UP,
-                                            on_click=lambda e: self.plus_click(e, 1, i, 0),
+                                            on_click=lambda e: self.plus_click(
+                                                e, 1, i, 0
+                                            ),
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
@@ -126,7 +136,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_LEFT,
-                                            on_click=lambda e: self.minus_click(e, 2, i, 0),
+                                            on_click=lambda e: self.minus_click(
+                                                e, 2, i, 0
+                                            ),
                                         ),
                                         ft.TextField(
                                             value="0",
@@ -140,7 +152,9 @@ class TemplateView:
                                         ),
                                         ft.IconButton(
                                             ft.icons.ARROW_RIGHT,
-                                            on_click=lambda e: self.plus_click(e, 2, i, 0),
+                                            on_click=lambda e: self.plus_click(
+                                                e, 2, i, 0
+                                            ),
                                         ),
                                     ],
                                 ),
@@ -148,7 +162,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_DROP_DOWN,
-                                            on_click=lambda e: self.minus_click(e, 1, i, 0),
+                                            on_click=lambda e: self.minus_click(
+                                                e, 1, i, 0
+                                            ),
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
@@ -163,7 +179,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_DROP_UP,
-                                            on_click=lambda e: self.plus_click(e, 1, i, 1),
+                                            on_click=lambda e: self.plus_click(
+                                                e, 1, i, 1
+                                            ),
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
@@ -173,7 +191,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_LEFT,
-                                            on_click=lambda e: self.minus_click(e, 2, i, 1),
+                                            on_click=lambda e: self.minus_click(
+                                                e, 2, i, 1
+                                            ),
                                         ),
                                         ft.TextField(
                                             value="0",
@@ -187,7 +207,9 @@ class TemplateView:
                                         ),
                                         ft.IconButton(
                                             ft.icons.ARROW_RIGHT,
-                                            on_click=lambda e: self.plus_click(e, 2, i, 1),
+                                            on_click=lambda e: self.plus_click(
+                                                e, 2, i, 1
+                                            ),
                                         ),
                                     ]
                                 ),
@@ -195,7 +217,9 @@ class TemplateView:
                                     [
                                         ft.IconButton(
                                             ft.icons.ARROW_DROP_DOWN,
-                                            on_click=lambda e: self.minus_click(e, 1, i, 1),
+                                            on_click=lambda e: self.minus_click(
+                                                e, 1, i, 1
+                                            ),
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
@@ -214,8 +238,18 @@ class TemplateView:
         )
 
     def minus_click(self, e, num, index, index_whxy):
-        self.settings.controls[index].controls[1].controls[index_whxy].controls[1].controls[num].value = str(
-            int(self.settings.controls[index].controls[1].controls[index_whxy].controls[1].controls[num].value) - 1
+        self.settings.controls[index].controls[1].controls[
+            index_whxy
+        ].controls[1].controls[num].value = str(
+            int(
+                self.settings.controls[index]
+                .controls[1]
+                .controls[index_whxy]
+                .controls[1]
+                .controls[num]
+                .value
+            )
+            - 1
         )
         if index_whxy == 0:
             if num == 1:
@@ -232,8 +266,18 @@ class TemplateView:
         self.page.update()
 
     def plus_click(self, e, num, index, index_whxy):
-        self.settings.controls[index].controls[1].controls[index_whxy].controls[1].controls[num].value = str(
-            int(self.settings.controls[index].controls[1].controls[index_whxy].controls[1].controls[num].value) + 1
+        self.settings.controls[index].controls[1].controls[
+            index_whxy
+        ].controls[1].controls[num].value = str(
+            int(
+                self.settings.controls[index]
+                .controls[1]
+                .controls[index_whxy]
+                .controls[1]
+                .controls[num]
+                .value
+            )
+            + 1
         )
         if index_whxy == 0:
             if num == 1:
@@ -256,7 +300,9 @@ class TemplateView:
 
         background = Image.open(self.path_img)
 
-        for overlay_info, name_img in zip(self.setting_template["Photos"], self.list_img):
+        for overlay_info, name_img in zip(
+            self.setting_template["Photos"], self.list_img
+        ):
             shoot = name_img
             x = overlay_info["x"]
             y = overlay_info["y"]

@@ -29,7 +29,9 @@ class PrintPage:
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-        self.txt_number = ft.TextField(value="0", text_align="right", width=400, text_size=30)
+        self.txt_number = ft.TextField(
+            value="0", text_align="right", width=400, text_size=30
+        )
         self.void_column = ft.Column(
             controls=[
                 ft.Text(
@@ -69,7 +71,9 @@ class PrintPage:
                 ),
             ]
         )
-        self.done_button = ft.Column(controls=[MainButton("Печать фото", self.do_nothing)])
+        self.done_button = ft.Column(
+            controls=[MainButton("Печать фото", self.do_nothing)]
+        )
 
         content = ft.Column(
             [
@@ -162,14 +166,20 @@ class PrintPage:
             if self.cut:
                 setting = {"copies": "1"}
             else:
-                setting = {"copies": "1", "media": "custom_104.99x162.56mm_104.99x162.56mm"}
+                setting = {
+                    "copies": "1",
+                    "media": "custom_104.99x162.56mm_104.99x162.56mm",
+                }
 
             conn = cups.Connection()
             printers = conn.getPrinters()
             for printer in printers:
                 conn.printFile(printer, filename, "PhotoBox", setting)
 
-        self.master.cur.execute("SELECT num_printed FROM session WHERE id = ?", (self.master.session[0],))
+        self.master.cur.execute(
+            "SELECT num_printed FROM session WHERE id = ?",
+            (self.master.session[0],),
+        )
         row = self.master.cur.fetchone()
         if row is not None:
             current_num_printed = row[0]
@@ -177,7 +187,8 @@ class PrintPage:
             # Обновление значения num_printed
             new_num_printed = current_num_printed + int(self.txt_number.value)
             self.master.cur.execute(
-                "UPDATE session SET num_printed = ? WHERE id = ?", (new_num_printed, self.master.session[0])
+                "UPDATE session SET num_printed = ? WHERE id = ?",
+                (new_num_printed, self.master.session[0]),
             )
 
             # Фиксация изменений

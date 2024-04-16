@@ -11,15 +11,25 @@ class Settings:
         self.master = master
 
         out_system = MainButton("В систему", self.shut_down)
-        templates_test_button = MainButton("Тест шаблонов", self.setting_tenplate)
-        templates_cut_test_button = MainButton("Тест разрезов", self.setting_cut_template)
+        templates_test_button = MainButton(
+            "Тест шаблонов", self.setting_tenplate
+        )
+        templates_cut_test_button = MainButton(
+            "Тест разрезов", self.setting_cut_template
+        )
         back_button = RedButton("Назад", self.back_main)
 
         content = ft.Column(
             [
                 ft.Row([out_system], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([templates_test_button], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([templates_cut_test_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row(
+                    [templates_test_button],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                ft.Row(
+                    [templates_cut_test_button],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
                 ft.Row([back_button], alignment=ft.MainAxisAlignment.CENTER),
             ],
             spacing=20,

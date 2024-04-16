@@ -22,10 +22,14 @@ class MainButton(Container):
             bgcolor=ft.colors.with_opacity(1, "#FF544D"),
             style=ft.ButtonStyle(
                 side={
-                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.with_opacity(1, "#FF544D")),
+                    ft.MaterialState.DEFAULT: ft.BorderSide(
+                        1, ft.colors.with_opacity(1, "#FF544D")
+                    ),
                 },
                 shape={
-                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(
+                        radius=20
+                    ),
                 },
             ),
         )
@@ -51,10 +55,14 @@ class RedButton(Container):
             bgcolor=ft.colors.with_opacity(1, "#FF544D"),
             style=ft.ButtonStyle(
                 side={
-                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.with_opacity(1, "#FF544D")),
+                    ft.MaterialState.DEFAULT: ft.BorderSide(
+                        1, ft.colors.with_opacity(1, "#FF544D")
+                    ),
                 },
                 shape={
-                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(
+                        radius=20
+                    ),
                 },
             ),
         )
@@ -74,7 +82,9 @@ class Alert(ft.AlertDialog):
         self.modal = True
         self.bgcolor = ft.colors.DEEP_ORANGE_500
         self.title = MainText("Новая сессия")
-        self.content = ft.TextField(label="Введите название", autofocus=True, width=700)
+        self.content = ft.TextField(
+            label="Введите название", autofocus=True, width=700
+        )
         self.actions = [
             MainButton("Подтвердить", on_click=event_next),
             MainButton("Назад", on_click=event_close),
@@ -108,7 +118,9 @@ class BackButton(Container):
                     ),
                 },
                 shape={
-                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=20),
+                    ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(
+                        radius=20
+                    ),
                 },
             ),
         )

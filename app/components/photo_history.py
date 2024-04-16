@@ -12,9 +12,13 @@ class PhotoHistory:
         self.dir_photo = self.master.session[3]
 
         self.index = 1
-        self.list_template_dir = os.listdir(f"{self.dir_photo}/photo_templates")
+        self.list_template_dir = os.listdir(
+            f"{self.dir_photo}/photo_templates"
+        )
         self.dir_activite = "dir_0"
-        self.list_template = os.listdir(f"{self.dir_photo}/photo_templates/{self.dir_activite}")
+        self.list_template = os.listdir(
+            f"{self.dir_photo}/photo_templates/{self.dir_activite}"
+        )
         self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
 
         self.count_open = 1
@@ -27,10 +31,26 @@ class PhotoHistory:
         )
         self.buttom_event = ft.Row(
             [
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_DOUBLE_ARROW_LEFT, on_click=self.mun_2),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_ARROW_LEFT, on_click=self.mun_1),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_ARROW_RIGHT, on_click=self.add_1),
-                ft.IconButton(icon_size=60, icon=ft.icons.KEYBOARD_DOUBLE_ARROW_RIGHT, on_click=self.add_2),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_DOUBLE_ARROW_LEFT,
+                    on_click=self.mun_2,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_ARROW_LEFT,
+                    on_click=self.mun_1,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_ARROW_RIGHT,
+                    on_click=self.add_1,
+                ),
+                ft.IconButton(
+                    icon_size=60,
+                    icon=ft.icons.KEYBOARD_DOUBLE_ARROW_RIGHT,
+                    on_click=self.add_2,
+                ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         )
@@ -44,7 +64,8 @@ class PhotoHistory:
                 self.cards_row,
                 self.buttom_event,
                 ft.Row(
-                    controls=[RedButton("Назад", lambda e: self.back(e))], alignment=ft.MainAxisAlignment.CENTER
+                    controls=[RedButton("Назад", lambda e: self.back(e))],
+                    alignment=ft.MainAxisAlignment.CENTER,
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -72,7 +93,9 @@ class PhotoHistory:
     def update_slider(self, name_dir):
         self.index = 1
         self.dir_activite = name_dir
-        self.list_template = os.listdir(f"{self.dir_photo}/photo_templates/{self.dir_activite}")
+        self.list_template = os.listdir(
+            f"{self.dir_photo}/photo_templates/{self.dir_activite}"
+        )
         self.path = f"{self.dir_photo}/photo_templates/{self.dir_activite}/"
         self.count_open = 1
         self.creact_slider(self.list_template)
