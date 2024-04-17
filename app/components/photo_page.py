@@ -27,29 +27,43 @@ class PhotoPage:
 
         self.name_category = self.master.session[4]
         self.setting_template = json.load(
-            open(f"{PathEnum.mnt_path.value}/{self.name_category}/{self.name_template}.json")
+            open(
+                f"{PathEnum.mnt_path.value}/{self.name_category}/{self.name_template}.json"
+            )
         )
         self.replace = None
         self.size_y = self.setting_template["Photos"][0]["x"]
         self.size_x = self.setting_template["Photos"][0]["y"]
 
         self.timer_event = threading.Event()
-        self.timer_text = ft.Row([ft.Text()])
+        self.timer_text = ft.Row(
+            [ft.Text()],
+            left=150,
+            top=80,
+        )
 
-        self.limit_img = len([i["shoot"] for i in self.setting_template["Photos"]])
+        self.limit_img = len(
+            [i["shoot"] for i in self.setting_template["Photos"]]
+        )
 
-        if self.limit_img != max([i["shoot"] for i in self.setting_template["Photos"]]):
-            self.limit_img = max([i["shoot"] for i in self.setting_template["Photos"]])
-            self.replace = len([i["shoot"] for i in self.setting_template["Photos"]]) / max(
+        if self.limit_img != max(
+            [i["shoot"] for i in self.setting_template["Photos"]]
+        ):
+            self.limit_img = max(
                 [i["shoot"] for i in self.setting_template["Photos"]]
             )
+            self.replace = len(
+                [i["shoot"] for i in self.setting_template["Photos"]]
+            ) / max([i["shoot"] for i in self.setting_template["Photos"]])
 
         self.dir_photo = self.master.session[3]
 
         self.count = 1
         self.list_img = []
 
-        self.quantity_image = self.count_files_in_folder(f"{self.dir_photo}/photo")
+        self.quantity_image = self.count_files_in_folder(
+            f"{self.dir_photo}/photo"
+        )
 
         self.button = MainButton("Сфотать", self.on_take_picture_button_click)
         self.canvas = ft.Image(
@@ -67,6 +81,7 @@ class PhotoPage:
                     weight=ft.FontWeight.W_600,
                 ),
             ],
+            width=300,
             horizontal_alignment=ft.MainAxisAlignment.CENTER,
         )
 
@@ -96,7 +111,14 @@ class PhotoPage:
                 ),
                 ft.Column(
                     [
-                        ft.Column(controls=[BackButton("Назад", lambda e: self.back(e, self.name_category))]),
+                        ft.Column(
+                            controls=[
+                                BackButton(
+                                    "Назад",
+                                    lambda e: self.back(e, self.name_category),
+                                )
+                            ]
+                        ),
                     ],
                     spacing=20,
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -124,7 +146,9 @@ class PhotoPage:
         target_aspect_ratio = overlay_info["w"] / overlay_info["h"]
 
         # Предполагаем, что размер экрана доступен как self.screen_width и self.screen_height
-        max_height = 550  # Изображение не должно превышать половину высоты экрана
+        max_height = (
+            550  # Изображение не должно превышать половину высоты экрана
+        )
 
         while self.run_loop:
             if self.master.cap:
@@ -147,13 +171,21 @@ class PhotoPage:
 
                     # Дополнительно изменяем размер до целевых параметров
                     if max_height < overlay_info["h"]:
-                        img = img.resize((overlay_info["w"] // 2, overlay_info["h"] // 2), Image.Resampling.LANCZOS)
+                        img = img.resize(
+                            (overlay_info["w"] // 2, overlay_info["h"] // 2),
+                            Image.Resampling.LANCZOS,
+                        )
                     else:
-                        img = img.resize((overlay_info["w"], overlay_info["h"]), Image.Resampling.LANCZOS)
+                        img = img.resize(
+                            (overlay_info["w"], overlay_info["h"]),
+                            Image.Resampling.LANCZOS,
+                        )
 
                     buffered = BytesIO()
                     img.save(buffered, format="JPEG")
-                    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+                    img_str = base64.b64encode(buffered.getvalue()).decode(
+                        "utf-8"
+                    )
 
                     self.canvas.src_base64 = img_str
                     self.page.update()
@@ -177,7 +209,12 @@ class PhotoPage:
         count = self.count
         self.list_img.append(name_image)
         overlay_info = self.setting_template["Photos"][0]
-        x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
+        x, y, w, h = (
+            overlay_info["x"],
+            overlay_info["y"],
+            overlay_info["w"],
+            overlay_info["h"],
+        )
 
         # Путь к только что сделанному снимку
         photo_path = f"{self.dir_photo}/photo/{name_image}.png"
@@ -210,7 +247,9 @@ class PhotoPage:
         overlay = overlay.resize(
             (w, h), Image.Resampling.LANCZOS
         )  # Image.ANTIALIAS заменено на Image.Resampling.LANCZOS
-
+        self.timer_text.top = int((h-250) // 2)
+        self.timer_text.left = int((w-250) // 2)
+        
         buffered = BytesIO()
         overlay.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -232,7 +271,9 @@ class PhotoPage:
                                     icon_color="pink600",
                                     icon_size=40,
                                     tooltip="Удалить фотографию",
-                                    on_click=lambda x: self.del_img(x, name_image, count),
+                                    on_click=lambda x: self.del_img(
+                                        x, name_image, count
+                                    ),
                                 ),
                             ),
                         ]
@@ -263,7 +304,9 @@ class PhotoPage:
                                     icon_color="pink600",
                                     icon_size=40,
                                     tooltip="Удалить фотографию",
-                                    on_click=lambda x: self.del_img(x, name_image, count),
+                                    on_click=lambda x: self.del_img(
+                                        x, name_image, count
+                                    ),
                                 ),
                             ),
                         ]
@@ -291,7 +334,10 @@ class PhotoPage:
 
     def count_files_in_folder(self, folder_path):
         try:
-            files = [int(name.split(".")[0].split("_")[-1]) for name in os.listdir(folder_path)]
+            files = [
+                int(name.split(".")[0].split("_")[-1])
+                for name in os.listdir(folder_path)
+            ]
             return sorted(files)[-1] + 1
         except Exception as e:
             return 0
@@ -321,7 +367,10 @@ class PhotoPage:
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
             actions=[
-                MainButton("Мне нравиться !", on_click=lambda e: self.go_printer(e, path_img)),
+                MainButton(
+                    "Мне нравиться !",
+                    on_click=lambda e: self.go_printer(e, path_img),
+                ),
                 RedButton("Не нравиться", on_click=self.close_dlg),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
@@ -351,9 +400,16 @@ class PhotoPage:
         background_path = f"{PathEnum.mnt_path.value}/{self.name_category}/{self.name_template}.png"
         background = Image.open(background_path)
 
-        for overlay_info, name_img in zip(self.setting_template["Photos"], self.list_img):
+        for overlay_info, name_img in zip(
+            self.setting_template["Photos"], self.list_img
+        ):
             shoot = name_img
-            x, y, w, h = overlay_info["x"], overlay_info["y"], overlay_info["w"], overlay_info["h"]
+            x, y, w, h = (
+                overlay_info["x"],
+                overlay_info["y"],
+                overlay_info["w"],
+                overlay_info["h"],
+            )
 
             # Загрузка изображения для наложения
             overlay_path = f"{self.dir_photo}/photo/{shoot}.png"
@@ -367,13 +423,23 @@ class PhotoPage:
                 # Широкое изображение
                 new_width = int(overlay.height * aspect_ratio)
                 overlay = overlay.crop(
-                    ((overlay.width - new_width) // 2, 0, (overlay.width + new_width) // 2, overlay.height)
+                    (
+                        (overlay.width - new_width) // 2,
+                        0,
+                        (overlay.width + new_width) // 2,
+                        overlay.height,
+                    )
                 )
             elif overlay_aspect_ratio < aspect_ratio:
                 # Высокое изображение
                 new_height = int(overlay.width / aspect_ratio)
                 overlay = overlay.crop(
-                    (0, (overlay.height - new_height) // 2, overlay.width, (overlay.height + new_height) // 2)
+                    (
+                        0,
+                        (overlay.height - new_height) // 2,
+                        overlay.width,
+                        (overlay.height + new_height) // 2,
+                    )
                 )
 
             # Изменение размера обрезанного изображения
@@ -400,7 +466,9 @@ class PhotoPage:
 
         # Iterate through directories in the base path
         for dir_name in os.listdir(base_path):
-            if dir_name.startswith("dir_") and os.path.isdir(os.path.join(base_path, dir_name)):
+            if dir_name.startswith("dir_") and os.path.isdir(
+                os.path.join(base_path, dir_name)
+            ):
                 # Extract the index from the directory name
                 try:
                     index = int(dir_name.split("_")[1])
@@ -410,7 +478,10 @@ class PhotoPage:
                 except ValueError:
                     continue
 
-        if max_dir is None or len(os.listdir(os.path.join(base_path, max_dir))) > 65:
+        if (
+            max_dir is None
+            or len(os.listdir(os.path.join(base_path, max_dir))) > 65
+        ):
             # Create a new directory with the next index
             new_index = max_index + 1
             new_dir_name = f"dir_{new_index:02d}"
@@ -428,13 +499,18 @@ class PhotoPage:
                     ft.Stack(
                         [
                             ft.Container(
-                                content=ft.Text(value=f"{str(remaining_time)}", color="white", size=90, weight="bold"),
+                                content=ft.Text(
+                                    value=f"{str(remaining_time)}",
+                                    color="white",
+                                    size=120,
+                                    weight="bold",
+                                ),
                                 alignment=ft.alignment.center,
-                                border_radius=100,
-                                width=150,
-                                height=150,
+                                border_radius=150,
+                                width=250,
+                                height=250,
                                 bgcolor=ft.colors.RED,
-                                opacity=0.5,
+                                opacity=0.7,
                             )
                         ]
                     )
@@ -443,7 +519,9 @@ class PhotoPage:
                 visible=True,
             )
             self.page.update()
-            threading.Timer(1, self.start_timer, args=[remaining_time - 1]).start()
+            threading.Timer(
+                1, self.start_timer, args=[remaining_time - 1]
+            ).start()
         else:
             self.timer_text.controls[0] = ft.Row([ft.Text(value="")])
             self.timer_event.set()
