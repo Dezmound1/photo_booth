@@ -30,7 +30,7 @@ class PrintPage:
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         self.txt_number = ft.TextField(
-            value="0", text_align="right", width=400, text_size=30
+            value="1", text_align="right", width=400, text_size=30
         )
         self.void_column = ft.Column(
             controls=[
